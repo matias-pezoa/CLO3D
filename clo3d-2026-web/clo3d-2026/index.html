@@ -1,0 +1,1376 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CLO 3D 2026</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: retícula suiza de baldosas cuadradas (azul / negro / blanco) sobre un gris frío,
+   reglas finas y flechas ↘ como señalética; cada clase es un "documento" con índice lateral. */
+:root{
+  --bg:#e7e8ec;          /* gris frío de fondo */
+  --tile:#ffffff;        /* baldosa blanca */
+  --ink:#0a0a0d;         /* negro tinta */
+  --ink-2:#4b4d57;       /* texto secundario */
+  --rule:#c4c6ce;        /* reglas finas */
+  --blue:#1d28e6;        /* azul eléctrico (comandos, costuras) */
+  --blue-soft:#5a62f0;
+  --on-blue:#ffffff;
+  --black-tile:#0a0a0d;
+  --on-black:#f4f4f6;
+  --ok:#0f7a4a;
+  --warn:#b4231b;
+  --font-d:"Instrument Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-m:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --s-1:.75rem; --s0:.9375rem; --s1:1.125rem; --s2:1.5rem; --s3:2.25rem; --s4:3.5rem; --s5:clamp(3rem,9vw,7.5rem);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0c0d11; --tile:#17181e; --ink:#f1f1f4; --ink-2:#a3a5b1; --rule:#2c2e37;
+    --blue:#4652ff; --blue-soft:#8f96ff; --on-blue:#ffffff; --black-tile:#000000; --on-black:#f4f4f6;
+    --ok:#3ccf8a; --warn:#ff6b5e; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0c0d11; --tile:#17181e; --ink:#f1f1f4; --ink-2:#a3a5b1; --rule:#2c2e37;
+  --blue:#4652ff; --blue-soft:#8f96ff; --on-blue:#ffffff; --black-tile:#000000; --on-black:#f4f4f6;
+  --ok:#3ccf8a; --warn:#ff6b5e; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-d);font-size:var(--s0);line-height:1.5;
+  font-stretch:100%;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.wrap{max-width:1280px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.mono{font-family:var(--font-m)}
+.label{font-family:var(--font-m);font-size:var(--s-1);letter-spacing:.06em;text-transform:uppercase}
+h1,h2,h3{font-weight:400;letter-spacing:-.035em;line-height:1;margin:0;text-wrap:balance}
+p{margin:0;max-width:62ch}
+
+/* ---------- header ---------- */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--rule)}
+.top .wrap{display:flex;align-items:center;gap:1rem 1.5rem;flex-wrap:wrap;padding-block:.7rem}
+.mark{display:flex;align-items:center;gap:.7rem;text-decoration:none}
+.mark b{display:grid;place-items:center;width:2.4rem;height:2.4rem;border:1.5px solid currentColor;font-family:var(--font-m);font-weight:500;font-size:.8rem}
+.mark span{font-size:var(--s-1);line-height:1.15;text-transform:uppercase;letter-spacing:.04em}
+.nav{display:flex;gap:.25rem;overflow-x:auto;flex:1 1 auto;min-width:0;scrollbar-width:none}
+.nav a{white-space:nowrap;text-decoration:none;padding:.35rem .6rem;font-size:.9rem;border:1px solid transparent}
+.nav a:hover{border-color:var(--rule)}
+.nav a[aria-current="page"]{background:var(--ink);color:var(--bg)}
+.toggles{display:flex;gap:.5rem;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--ink)}
+.seg button{background:none;border:0;padding:.3rem .55rem;font-family:var(--font-m);font-size:.72rem;cursor:pointer;letter-spacing:.04em}
+.seg button+button{border-left:1px solid var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--blue);color:var(--on-blue)}
+
+/* ---------- commands & keys ---------- */
+.cmd{color:var(--blue);font-weight:550;white-space:nowrap}
+.cmd .es{color:var(--blue-soft);font-weight:450}
+.cmd .sep{color:var(--blue-soft);font-weight:400;padding:0 .2em}
+kbd{font-family:var(--font-m);font-size:.82em;border:1px solid var(--ink);padding:.05em .4em;white-space:nowrap;background:var(--tile)}
+
+/* ---------- views ---------- */
+main{padding-block:1.5rem 4rem}
+.view{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(2.5rem,6vw,5rem)}
+.view>*{min-width:0}
+.block,.sb,.doc-body,.steps,.ctrls,.fig{grid-template-columns:minmax(0,1fr)}
+.block>*,.sb>*,.doc-body>*,.fig>*{min-width:0}
+
+/* hero tiles */
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(10px,1.6vw,20px)}
+.tile{aspect-ratio:1/1;max-width:100%;position:relative;overflow:hidden;padding:clamp(14px,2.2vw,28px);display:flex;flex-direction:column;min-width:0}
+.t-blue{background:var(--blue);color:var(--on-blue)}
+.t-black{background:var(--black-tile);color:var(--on-black)}
+.t-white{background:var(--tile);color:var(--ink)}
+.big{font-size:clamp(2.6rem,7.2vw,6.2rem);letter-spacing:-.05em;line-height:.9}
+.t1 .big + .big{margin-top:.08em}
+.t1 .row{display:flex;gap:1rem;align-items:flex-start;margin-top:auto}
+.t1 .small{font-size:clamp(.62rem,1.05vw,.85rem);line-height:1.25;text-transform:uppercase;letter-spacing:.02em}
+.arrow-link{display:inline-block;text-decoration:none;font-size:clamp(2.2rem,5vw,4.5rem);line-height:.8;transition:transform .3s}
+.arrow-link:hover{transform:translate(6px,6px)}
+.ring{position:absolute;inset:8%;}
+.ring svg{width:100%;height:100%;overflow:visible}
+.ring text{fill:currentColor;font-family:var(--font-d);font-size:10.2px;letter-spacing:.14em;text-transform:uppercase}
+.spin{transform-origin:50% 50%;animation:spin 38s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ring .core{font-size:20px;letter-spacing:-.03em;text-transform:none}
+.halves{margin:auto 0;display:grid;gap:6%}
+.half{aspect-ratio:2/1;max-width:100%;padding:6% 11%;display:flex;flex-direction:column;justify-content:center;font-size:clamp(.62rem,1.2vw,.95rem);line-height:1.2;text-transform:uppercase}
+.half.up{background:var(--black-tile);color:var(--on-black);border-radius:0 0 50% 50% / 0 0 100% 100%;transform:scaleY(-1)}
+.half.up > div{transform:scaleY(-1)}
+.half.down{background:var(--blue);color:var(--on-blue);border-radius:0 0 50% 50% / 0 0 100% 100%;justify-content:flex-start;padding-top:5%}
+.half.up{justify-content:flex-end}
+
+.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:1.5rem;border-top:1px solid var(--ink);padding-top:1rem}
+.intro p{font-size:clamp(1.2rem,2.3vw,1.75rem);line-height:1.2;letter-spacing:-.02em;max-width:34ch}
+
+/* class list (rows a lo "speakers") */
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;border-bottom:1px solid var(--ink);padding-bottom:.6rem;margin-bottom:0}
+.sec-h h2{font-size:clamp(2rem,5vw,3.6rem)}
+.rows{list-style:none;margin:0;padding:0}
+.rows li{border-bottom:1px solid var(--rule)}
+.rows a,.rows .ghost{display:grid;grid-template-columns:5.5rem minmax(0,1fr) auto;gap:1rem;align-items:center;padding:1.1rem 0;text-decoration:none}
+.rows .n{font-size:clamp(2.2rem,5vw,3.8rem);letter-spacing:-.05em;line-height:.9}
+.rows .ttl{font-size:clamp(1.15rem,2.2vw,1.6rem);letter-spacing:-.02em;line-height:1.15}
+.rows .meta{color:var(--ink-2);font-size:.85rem;margin-top:.3rem}
+.rows .go{font-size:2rem;transition:transform .25s}
+.rows a:hover .go{transform:translate(5px,5px)}
+.rows a:hover .n{color:var(--blue)}
+.rows .ghost{color:var(--ink-2)}
+.rows .ghost .n{-webkit-text-stroke:1px var(--ink-2);color:transparent}
+
+.res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:clamp(10px,1.6vw,20px)}
+.res{padding:1.2rem;min-height:12rem;display:flex;flex-direction:column;gap:.6rem;text-decoration:none;transition:transform .25s}
+.res:hover{transform:translateY(-4px)}
+.res h3{font-size:clamp(1.5rem,2.6vw,2rem)}
+.res .foot{margin-top:auto;display:flex;justify-content:space-between;align-items:end}
+.res .foot span:last-child{font-size:1.8rem;line-height:1}
+
+/* ---------- document (class) layout ---------- */
+.doc-head{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:clamp(10px,1.6vw,20px)}
+.doc-title{background:var(--blue);color:var(--on-blue);padding:clamp(16px,2.4vw,32px);display:flex;flex-direction:column;gap:1.4rem;min-height:clamp(18rem,36vw,28rem)}
+.doc-title .big{font-size:clamp(2.4rem,6vw,5.4rem)}
+.doc-title .lead{font-size:clamp(1rem,1.6vw,1.25rem);max-width:36ch;margin-top:auto}
+.facts{background:var(--tile);padding:clamp(16px,2.4vw,32px);display:grid;align-content:start}
+.facts dl{margin:0;display:grid}
+.facts dl>div{display:grid;grid-template-columns:7rem minmax(0,1fr);gap:1rem;border-bottom:1px solid var(--rule);padding:.75rem 0}
+.facts dt{font-family:var(--font-m);font-size:var(--s-1);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);padding-top:.15rem}
+.facts dd{margin:0}
+.back{justify-self:start;text-decoration:none;font-family:var(--font-m);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:calc(-1 * clamp(1.5rem,4vw,3.5rem))}
+.back:hover{color:var(--blue)}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--ink);overflow-x:auto}
+.tabs a{text-decoration:none;padding:.8rem 1.1rem;font-size:1.05rem;border:1px solid transparent;border-bottom:0;white-space:nowrap;display:flex;gap:.6rem;align-items:baseline}
+.tabs a .mono{font-size:.75rem}
+.tabs a[aria-current="page"]{background:var(--ink);color:var(--bg)}
+
+.doc{display:grid;grid-template-columns:13rem minmax(0,1fr);gap:clamp(1.5rem,4vw,4rem);align-items:start}
+.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 5rem);display:grid;gap:.1rem;font-size:.88rem}
+.toc a{text-decoration:none;display:grid;grid-template-columns:2rem 1fr;padding:.3rem 0;color:var(--ink-2);border-top:1px solid var(--rule)}
+.toc a:hover,.toc a.on{color:var(--ink)}
+.toc a.on .mono{color:var(--blue)}
+.toc .mono{font-size:.75rem;padding-top:.15rem}
+.doc-body{display:grid;gap:clamp(3rem,6vw,5rem);min-width:0}
+.block{display:grid;gap:1.2rem;min-width:0;scroll-margin-top:6rem}
+.block>header{display:grid;grid-template-columns:auto minmax(0,1fr);gap:1rem;align-items:baseline;border-top:1px solid var(--ink);padding-top:.8rem}
+.block>header .num{font-family:var(--font-m);font-size:.8rem;color:var(--blue)}
+.block>header h2{font-size:clamp(1.8rem,3.8vw,2.9rem)}
+.block p+p{margin-top:.2rem}
+.note{border-left:3px solid var(--blue);padding:.2rem 0 .2rem 1rem;color:var(--ink-2);max-width:62ch}
+.statement{font-size:clamp(1.25rem,2.3vw,1.7rem);line-height:1.22;letter-spacing:-.02em;max-width:40ch}
+
+/* checklists */
+.check{list-style:none;margin:0;padding:0;display:grid;border-top:1px solid var(--rule);max-width:46rem}
+.check li{border-bottom:1px solid var(--rule)}
+.check label{display:grid;grid-template-columns:1.6rem minmax(0,1fr);gap:.8rem;padding:.75rem 0;cursor:pointer;align-items:start}
+.check input{appearance:none;width:1.2rem;height:1.2rem;border:1.5px solid var(--ink);margin:.15rem 0 0;display:grid;place-items:center;cursor:pointer;background:var(--tile)}
+.check input:checked{background:var(--blue);border-color:var(--blue)}
+.check input:checked::after{content:"";width:.35rem;height:.65rem;border:solid var(--on-blue);border-width:0 2px 2px 0;transform:translate(0,-1px) rotate(45deg)}
+.check input:checked + span{color:var(--ink-2);text-decoration:line-through;text-decoration-color:var(--blue)}
+.meter{display:flex;align-items:center;gap:.8rem;font-family:var(--font-m);font-size:.78rem}
+.meter .bar{flex:1;display:grid;grid-auto-flow:column;gap:3px;max-width:22rem}
+.meter .bar i{height:6px;background:var(--rule)}
+.meter .bar i.on{background:var(--blue)}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;max-width:100%}
+table{border-collapse:collapse;width:100%;min-width:30rem;font-size:.95rem}
+th{font-family:var(--font-m);font-weight:500;font-size:var(--s-1);text-transform:uppercase;letter-spacing:.06em;text-align:left;color:var(--ink-2);padding:.6rem .8rem .6rem 0;border-bottom:1px solid var(--ink)}
+td{padding:.7rem .8rem .7rem 0;border-bottom:1px solid var(--rule);vertical-align:top}
+tr[data-zone]{cursor:default;transition:background .15s}
+tr[data-zone].hl td{background:color-mix(in srgb,var(--blue) 12%,transparent)}
+
+/* UI map */
+.shot{margin:0;display:grid;gap:.6rem;min-width:0}
+.shot-img{display:block;padding:0;border:0;background:var(--black-tile);cursor:zoom-in;position:relative;width:100%}
+.shot-img img{display:block;width:100%;height:auto;max-width:100%}
+.shot figcaption{font-size:.8rem;color:var(--ink-2)}
+.spot{position:absolute;width:4.4%;aspect-ratio:1/1;border-radius:50%;transform:translate(-50%,-50%) scale(.6);border:2.5px solid #ffffff;box-shadow:0 0 0 3px #1d28e6,0 0 18px 4px rgba(29,40,230,.65);opacity:0;pointer-events:none;transition:opacity .2s,transform .25s}
+.spot.on{opacity:1;transform:translate(-50%,-50%) scale(1.6)}
+.hot-tbl [data-n]{cursor:default;transition:background .15s}
+.hot-tbl tr.hl td,.hot-tbl li.hl{background:color-mix(in srgb,var(--blue) 12%,transparent)}
+.mini-steps{list-style:none;margin:0;padding:0;display:grid;border-top:1px solid var(--rule);max-width:46rem}
+.mini-steps li{display:grid;grid-template-columns:2rem minmax(0,1fr);gap:.8rem;padding:.7rem .3rem;border-bottom:1px solid var(--rule);align-items:center}
+.mini-steps b{display:grid;place-items:center;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--blue);color:var(--on-blue);font-family:var(--font-m);font-size:.75rem;font-weight:500}
+.callout{background:var(--blue);color:var(--on-blue);padding:1rem 1.2rem;max-width:46rem;font-size:1.02rem}
+.callout.dark{background:var(--black-tile);color:var(--on-black)}
+.flow{list-style:none;margin:0;padding:0;display:grid;gap:.55rem;max-width:46rem}
+.flow::before{content:"FLUJO";justify-self:start;font-family:var(--font-m);font-size:.7rem;letter-spacing:.06em;background:var(--blue);color:var(--on-blue);padding:.35rem .8rem;border-radius:999px}
+.flow li{padding-left:calc(var(--x,0) * 1%)}
+.flow .pill,.flow a{display:inline-flex;gap:.7rem;align-items:baseline;border:1.5px solid var(--ink);border-radius:999px;padding:.45rem 1.1rem;text-decoration:none;font-size:1.05rem;background:var(--tile);transition:background .2s,color .2s,transform .2s}
+.flow .pill .mono,.flow a .mono{font-size:.72rem;color:var(--blue)}
+.flow a .go{opacity:0;transition:opacity .2s}
+.flow a:hover{background:var(--blue);color:var(--on-blue);border-color:var(--blue);transform:translateX(4px)}
+.flow a:hover .mono{color:var(--on-blue)}
+.flow a:hover .go{opacity:1}
+.flow.igual::before{content:"IGUAL"}
+.flow .pill .cmd{white-space:normal}
+.term .alt{font-size:.78rem;color:var(--ink-2);font-family:var(--font-m)}
+.anat-mini{max-width:34rem}
+.multi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.rasgo{background:var(--tile);border:1px solid transparent;padding:.9rem;display:grid;gap:.4rem;text-align:left;cursor:pointer;min-width:0;transition:border-color .2s}
+.rasgo:hover{border-color:var(--blue)}
+.rasgo .rt{font-size:1.4rem;letter-spacing:-.03em}
+.rasgo svg{width:100%;height:auto;max-height:12rem}
+.rasgo .rc{font-size:.8rem;color:var(--ink-2)}
+.rasgo .rgo{font-family:var(--font-m);font-size:.7rem;color:var(--blue);opacity:0;transition:opacity .2s}
+.rasgo:hover .rgo,.rasgo:focus-visible .rgo{opacity:1}
+dialog#lb{border:0;padding:0;background:transparent;max-width:min(96vw,1400px);width:100%}
+dialog#lb::backdrop{background:rgba(5,6,10,.86)}
+.lb-in{display:grid;gap:.5rem}
+.lb-in img{width:100%;height:auto;display:block}
+.lb-bar{display:flex;justify-content:space-between;gap:1rem;align-items:center;color:#f4f4f6;font-size:.85rem}
+.lb-bar button{background:#f4f4f6;color:#0a0a0d;border:0;padding:.45rem .8rem;cursor:pointer;font-family:var(--font-m);font-size:.78rem}
+.linked{display:flex;gap:.8rem;align-items:center;color:var(--ink-2);font-size:.9rem}
+
+/* operations */
+.ops{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.op{background:var(--tile);padding:1rem;display:flex;flex-direction:column;gap:.7rem;min-height:15rem;min-width:0}
+.op:first-child{background:var(--blue);color:var(--on-blue)}
+.op:first-child .cmd,.op:first-child .cmd .es,.op:first-child .cmd .sep{color:var(--on-blue)}
+.op h3{font-size:clamp(1.3rem,2vw,1.6rem)}
+.op .n{font-family:var(--font-m);font-size:.72rem}
+.op .cmds{margin-top:auto;display:grid;gap:.3rem;font-size:.85rem}
+.op .cmds .cmd{white-space:normal;overflow-wrap:anywhere}
+
+/* figures */
+.fig{background:var(--tile);padding:clamp(12px,2vw,24px);display:grid;gap:1rem;min-width:0}
+.fig svg{width:100%;height:auto;display:block;max-width:100%}
+.fig .caption{font-size:.85rem;color:var(--ink-2)}
+.legend{display:flex;flex-wrap:wrap;gap:.4rem}
+.chip{border:1px solid var(--ink);background:none;padding:.3rem .65rem;font-size:.82rem;cursor:pointer;display:inline-flex;gap:.45rem;align-items:center}
+.chip i{width:.9rem;height:2px;background:var(--ink);display:inline-block}
+.chip.sew i{background:var(--blue);height:3px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.chip.sew[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:var(--on-blue)}
+.chip.sew[aria-pressed="true"] i{background:var(--on-blue)}
+.pc-out{fill:none;stroke:var(--ink);stroke-width:1.6;vector-effect:non-scaling-stroke;transition:stroke .2s,stroke-width .2s}
+.pc-out.sew{stroke:var(--blue);stroke-width:2.6}
+.pc-out.dim{opacity:.18}
+.pc-out.hot{stroke-width:4.2}
+.pc-fill{fill:color-mix(in srgb,var(--ink) 4%,transparent)}
+.pc-base{fill:none;stroke:var(--ink-2);stroke-width:1;stroke-dasharray:3 3;vector-effect:non-scaling-stroke}
+.pc-lbl{fill:var(--ink);font-family:var(--font-m);font-size:3.2px;letter-spacing:.05em}
+.pc-tag{fill:var(--blue);font-family:var(--font-m);font-size:3.6px;font-weight:500}
+.ax{stroke:var(--rule);stroke-width:1;vector-effect:non-scaling-stroke}
+.sil{fill:none;stroke:var(--rule);stroke-width:1;vector-effect:non-scaling-stroke}
+
+/* lab (rasgos) */
+#lab-svg{max-height:62vh}
+.lab{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:8px}
+.ctrls{background:var(--tile);padding:clamp(12px,2vw,22px);display:grid;gap:1rem;align-content:start}
+.ctrl{display:grid;gap:.35rem}
+.ctrl .top-row{display:flex;justify-content:space-between;gap:1rem;align-items:baseline}
+.ctrl .top-row b{font-weight:500;font-size:1.05rem}
+.ctrl .val{font-family:var(--font-m);font-size:.78rem;color:var(--blue);font-variant-numeric:tabular-nums}
+.ctrl small{color:var(--ink-2);font-size:.8rem}
+input[type=range]{width:100%;accent-color:var(--blue)}
+select,input[type=text]{font:inherit;border:1px solid var(--ink);background:var(--bg);color:var(--ink);padding:.4rem .5rem;border-radius:0;min-width:0;width:100%}
+.mini-seg{display:flex;flex-wrap:wrap;gap:.3rem}
+.mini-seg button{border:1px solid var(--ink);background:none;padding:.22rem .5rem;font-size:.78rem;cursor:pointer}
+.mini-seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.readout{display:grid;gap:.3rem;font-family:var(--font-m);font-size:.76rem;border-top:1px solid var(--rule);padding-top:.8rem;font-variant-numeric:tabular-nums}
+.readout div{display:flex;justify-content:space-between;gap:.5rem}
+.st-ok{color:var(--ok)} .st-bad{color:var(--warn)}
+.reset{justify-self:start;border:1px solid var(--ink);background:none;padding:.35rem .7rem;cursor:pointer;font-size:.85rem}
+
+/* steps */
+.progress{position:sticky;top:calc(env(safe-area-inset-top,0px) + 4.2rem);z-index:5;background:var(--bg);padding:.7rem 0;border-bottom:1px solid var(--rule)}
+.steps{display:grid;gap:0;counter-reset:s}
+.step{display:grid;grid-template-columns:clamp(3.4rem,9vw,7.5rem) minmax(0,1fr);gap:clamp(.8rem,3vw,2.5rem);border-top:1px solid var(--ink);padding:1.4rem 0 2.2rem;scroll-margin-top:9rem}
+.step .sn{font-size:clamp(3rem,8vw,6rem);letter-spacing:-.06em;line-height:.8;transition:color .2s}
+.step.done .sn{color:var(--blue)}
+.step .sb{display:grid;gap:1rem;min-width:0}
+.step h3{font-size:clamp(1.5rem,3vw,2.2rem)}
+.step .cmdline{display:flex;flex-wrap:wrap;gap:.4rem}
+.step .cmdline .cmd{border:1px solid var(--blue);padding:.2rem .55rem;font-size:.88rem;white-space:normal}
+.done-btn{justify-self:start;display:inline-flex;gap:.6rem;align-items:center;border:1px solid var(--ink);background:none;padding:.45rem .8rem;cursor:pointer;font-size:.9rem}
+.done-btn[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:var(--on-blue)}
+.final{background:var(--black-tile);color:var(--on-black);padding:clamp(16px,2.6vw,32px);display:grid;grid-template-columns:auto minmax(0,1fr);gap:1.5rem;align-items:center}
+.final .big{font-size:clamp(2.5rem,6vw,5rem)}
+.final p{font-size:clamp(1.05rem,1.8vw,1.35rem);line-height:1.3}
+
+/* sewing demo */
+.sew-demo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1rem;align-items:center}
+.sew-demo svg line{vector-effect:non-scaling-stroke}
+
+/* accordion */
+.acc{border-top:1px solid var(--ink);max-width:52rem}
+.acc details{border-bottom:1px solid var(--rule)}
+.acc summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) 1.5rem;gap:1rem;padding:.9rem 0;font-size:1.1rem}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary::after{content:"↘";color:var(--blue);transition:transform .2s;justify-self:end}
+.acc details[open] summary::after{transform:rotate(-90deg)}
+.acc details>div{padding:0 0 1rem 0;color:var(--ink-2);max-width:56ch}
+
+/* deliverable */
+.deliver{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.deliver>div{background:var(--tile);padding:1rem;display:grid;gap:.5rem;align-content:start;min-width:0}
+.deliver .k{font-family:var(--font-m);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2)}
+.namer{background:var(--black-tile);color:var(--on-black);padding:clamp(14px,2.2vw,26px);display:grid;gap:1rem}
+.namer .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}
+.namer label{display:grid;gap:.3rem;font-family:var(--font-m);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em}
+.namer input{background:transparent;color:var(--on-black);border-color:var(--on-black)}
+.namer .out{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center;justify-content:space-between;border-top:1px solid #3a3b44;padding-top:1rem}
+.namer code{font-family:var(--font-m);font-size:clamp(.9rem,2vw,1.25rem);word-break:break-all}
+.namer button{background:var(--blue);color:var(--on-blue);border:0;padding:.5rem .9rem;cursor:pointer}
+
+/* glossary */
+.gl-tools{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center}
+.gl-tools input{max-width:22rem}
+.gl{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:8px}
+.term{background:var(--tile);padding:1rem;display:grid;gap:.4rem;align-content:start;min-height:9rem;min-width:0}
+.term .cat{font-family:var(--font-m);font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);display:flex;justify-content:space-between}
+.term .en{font-size:1.35rem;letter-spacing:-.02em;line-height:1.1;color:var(--blue)}
+.term .es{font-size:1rem;color:var(--blue-soft)}
+.term .use{margin-top:auto;font-size:.88rem;color:var(--ink-2)}
+.empty{padding:2rem 0;color:var(--ink-2)}
+.flash{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.card{aspect-ratio:3/2;max-width:100%;background:var(--blue);color:var(--on-blue);padding:clamp(14px,2.4vw,28px);display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;border:0;text-align:left;min-width:0}
+.card.back{background:var(--black-tile);color:var(--on-black);cursor:default}
+.card .q{font-size:clamp(1.8rem,4.5vw,3.6rem);letter-spacing:-.04em;line-height:1}
+.card .a{font-size:clamp(1.3rem,2.8vw,2.1rem);letter-spacing:-.03em;line-height:1.05}
+.flash-ctrl{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--ink);background:none;padding:.45rem .85rem;cursor:pointer;font-size:.9rem}
+.btn.pri{background:var(--ink);color:var(--bg)}
+
+/* os */
+.os-big{display:flex;gap:8px}
+.os-big button{flex:1;aspect-ratio:2.6/1;max-width:100%;border:0;background:var(--tile);font-size:clamp(1.6rem,5vw,3.6rem);letter-spacing:-.04em;text-align:left;padding:clamp(12px,2vw,24px);cursor:pointer;display:flex;align-items:flex-end;justify-content:space-between}
+.os-big button[aria-pressed="true"]{background:var(--blue);color:var(--on-blue)}
+td.os-col{transition:background .15s,color .15s}
+td.os-col.sel{background:color-mix(in srgb,var(--blue) 12%,transparent);font-weight:550}
+th.os-col.sel{color:var(--blue)}
+.lab-tbl input[type=checkbox]{width:1.1rem;height:1.1rem;accent-color:var(--blue)}
+.lab-tbl input[type=text]{background:transparent;border:0;border-bottom:1px solid var(--rule);padding:.2rem 0}
+
+.links{list-style:none;margin:0;padding:0;border-top:1px solid var(--ink)}
+.links li{border-bottom:1px solid var(--rule)}
+.links a{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1rem;padding:1rem 0;text-decoration:none}
+.links a:hover .t{color:var(--blue)}
+.links .t{font-size:1.2rem;letter-spacing:-.01em}
+.links .d{color:var(--ink-2);font-size:.88rem}
+
+footer{border-top:1px solid var(--ink)}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;padding-block:1.2rem 2rem;font-size:.8rem}
+
+/* ---------- responsive ---------- */
+@media (max-width:1180px){
+  .ops{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .op:first-child{grid-column:1/-1;min-height:auto}
+  .lab{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:820px){
+  .tiles{grid-template-columns:minmax(0,1fr)}
+  .tile{aspect-ratio:auto;min-height:20rem}
+  .tile.t-black,.tile.t-white{aspect-ratio:1/1;min-height:0}
+  .intro,.doc-head{grid-template-columns:minmax(0,1fr)}
+  .doc{grid-template-columns:minmax(0,1fr)}
+  .toc{display:none}
+  .deliver{grid-template-columns:minmax(0,1fr)}
+  .flash{grid-template-columns:minmax(0,1fr)}
+  .sew-demo{grid-template-columns:minmax(0,1fr)}
+  .top{position:static}
+  .progress{top:env(safe-area-inset-top,0px)}
+  .toc{top:0}
+}
+@media (max-width:520px){
+  .cmd{white-space:normal}
+  .rows a,.rows .ghost{grid-template-columns:3.6rem minmax(0,1fr) auto}
+  .namer .fields{grid-template-columns:minmax(0,1fr)}
+  .facts dl>div{grid-template-columns:minmax(0,1fr);gap:.2rem}
+  .final{grid-template-columns:minmax(0,1fr)}
+  .flow li{padding-left:calc(var(--x,0) * .5%)}
+  .flow a{font-size:.95rem}
+  .multi{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (prefers-reduced-motion:reduce){
+  .spin{animation:none}
+  html{scroll-behavior:auto}
+  *{transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="#inicio"><b>CLO</b><span>Fabricación Digital<br>2026</span></a>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#inicio">Inicio</a>
+      <a href="#clases" data-match="clase">Clases</a>
+      <a href="#glosario">Glosario</a>
+      <a href="#winmac">Windows / macOS</a>
+      <a href="#recursos">Recursos</a>
+    </nav>
+    <div class="toggles">
+      <div class="seg" role="group" aria-label="Idioma de los comandos">
+        <button type="button" data-lang="en">EN</button><button type="button" data-lang="both">EN/ES</button><button type="button" data-lang="es">ES</button>
+      </div>
+      <div class="seg" role="group" aria-label="Sistema operativo">
+        <button type="button" data-os="win">WIN</button><button type="button" data-os="mac">MAC</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ================= INICIO ================= -->
+<section class="view" data-view="inicio">
+  <div class="tiles">
+    <div class="tile t-blue t1">
+      <div class="big">CLO 3D</div>
+      <div class="big">2026</div>
+      <div class="row">
+        <div class="small">Fabricación digital<br>Patrón + costura + simulación<br>Entorno 2D ↘ 3D<br>Clase 01 ↘ primer vestido</div>
+        <a class="arrow-link" href="#clase01" aria-label="Ir a la clase 01" style="margin-left:auto">↘</a>
+      </div>
+    </div>
+    <div class="tile t-black">
+      <div class="ring" aria-hidden="true">
+        <svg viewBox="0 0 200 200">
+          <defs><path id="circ" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs>
+          <g class="spin"><text><textPath href="#circ" textLength="488">Del plano al cuerpo · patrón · costura · simulación ·</textPath></text></g>
+          <text class="core" x="100" y="106" text-anchor="middle">2D ↘ 3D</text>
+        </svg>
+      </div>
+    </div>
+    <div class="tile t-white">
+      <div class="halves" aria-hidden="true">
+        <div class="half up"><div>Patrón 2D<br>↘ (plano, en la ventana 2D)<br>Polígono · costura</div></div>
+        <div class="half down"><div>Prenda 3D (sobre el avatar)<br>Simulación ↘<br>caída · holgura · calce</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="intro">
+    <span class="label">↘ Sobre esta web</span>
+    <p>Guías, ejercicios y recursos del módulo de CLO 3D. Cada clase se publica aquí con su guía de contenidos, su práctica paso a paso y lo que hay que entregar.</p>
+  </div>
+
+  <section>
+    <div class="sec-h"><h2>Clases</h2><span class="label">1 publicada</span></div>
+    <ul class="rows class-rows"></ul>
+  </section>
+
+  <section>
+    <div class="sec-h" style="margin-bottom:clamp(10px,1.6vw,20px)"><h2>Recursos</h2><span class="label">Se actualizan cada clase</span></div>
+    <div class="res-grid">
+      <a class="res t-black" href="#glosario"><span class="label">03 · Glosario</span><h3>Comandos en inglés y español</h3><div class="foot"><span class="mono">24 entradas</span><span>↘</span></div></a>
+      <a class="res t-white" href="#winmac"><span class="label">04 · Referencia rápida</span><h3>Windows y macOS</h3><div class="foot"><span class="mono">Teclado · mouse</span><span>↘</span></div></a>
+      <a class="res t-blue" href="#recursos"><span class="label">Enlaces</span><h3>Manual oficial de CLO</h3><div class="foot"><span class="mono">support.clo3d.com</span><span>↘</span></div></a>
+    </div>
+  </section>
+</section>
+
+<!-- ================= CLASES (índice) ================= -->
+<section class="view" data-view="clases" hidden>
+  <div class="doc-head">
+    <div class="doc-title">
+      <span class="label">Módulo CLO 3D · 2026 ↘</span>
+      <h1 class="big">Clases</h1>
+      <p class="lead">Cada clase tiene su guía de contenidos, su práctica paso a paso y lo que hay que entregar. Se publican a medida que avanza el curso.</p>
+    </div>
+    <div class="facts">
+      <dl>
+        <div><dt>Publicadas</dt><dd id="cl-count">1</dd></div>
+        <div><dt>Entregas</dt><dd>Canvas</dd></div>
+        <div><dt>Autoría</dt><dd>Matías Pezoa</dd></div>
+      </dl>
+    </div>
+  </div>
+  <ul class="rows class-rows"></ul>
+</section>
+
+<!-- ================= CLASE 01 · CONTENIDOS ================= -->
+<section class="view" data-view="clase01" hidden>
+  <a class="back" href="#clases">↖ Todas las clases</a>
+  <div class="doc-head">
+    <div class="doc-title">
+      <span class="label">Clase 01 · 2026 ↘</span>
+      <h1 class="big">Interfaz, navegación y primer vestido</h1>
+      <p class="lead">Qué vas a aprender en la primera clase, con qué herramientas y qué tienes que entregar.</p>
+    </div>
+    <div class="facts">
+      <dl>
+        <div><dt>Entrega</dt><dd>Vestido con un rasgo propio</dd></div>
+        <div><dt>Formato</dt><dd><span class="mono">.zprj</span> + captura frontal</dd></div>
+        <div><dt>Producto</dt><dd>Vestido sin mangas, sin pinzas</dd></div>
+        <div><dt>Dónde</dt><dd>Canvas</dd></div>
+        <div><dt>Autoría</dt><dd>Matías Pezoa</dd></div>
+      </dl>
+    </div>
+  </div>
+  <nav class="tabs" aria-label="Documentos de la clase 01">
+    <a href="#clase01"><span class="mono">01</span>Guía de contenidos</a>
+    <a href="#clase01-practica"><span class="mono">02</span>Guía práctica · 9 pasos</a>
+  </nav>
+
+  <div class="doc">
+    <nav class="toc" aria-label="Índice">
+      <a href="#c-objetivo"><span class="mono">01</span>Objetivo</a>
+      <a href="#c-antes"><span class="mono">02</span>Antes de empezar</a>
+      <a href="#c-interfaz"><span class="mono">03</span>Reconocer la interfaz</a>
+      <a href="#c-avatar"><span class="mono">04</span>Cargar el avatar</a>
+      <a href="#c-silueta"><span class="mono">05</span>Silueta del avatar</a>
+      <a href="#c-flujo"><span class="mono">06</span>Flujo de trabajo</a>
+      <a href="#c-ops"><span class="mono">07</span>Operaciones</a>
+      <a href="#c-anatomia"><span class="mono">08</span>Anatomía del vestido</a>
+      <a href="#c-referencia"><span class="mono">09</span>Referencia de resultado</a>
+      <a href="#c-entrega"><span class="mono">10</span>Entrega</a>
+      <a href="#c-logro"><span class="mono">11</span>Criterio de logro</a>
+    </nav>
+    <div class="doc-body">
+      <section class="block" id="c-objetivo">
+        <header><span class="num">01</span><h2>Objetivo</h2></header>
+        <p class="statement">Reconocer los entornos 2D y 3D de CLO y construir un vestido holgado, sin pinzas, usando la silueta del avatar como referencia.</p>
+        <p>Con el vestido base listo, cada estudiante cambia al menos un rasgo: el largo, el escote, la holgura u otro que elija. Eso es lo que se entrega.</p>
+      </section>
+
+      <section class="block" id="c-antes">
+        <header><span class="num">02</span><h2>Antes de empezar</h2></header>
+        <ul class="check" data-store="c01-antes">
+          <li><label><input type="checkbox"><span>CLO instalado y con la licencia activa.</span></label></li>
+          <li><label><input type="checkbox"><span>Un mouse externo de tres botones con rueda.</span></label></li>
+          <li><label><input type="checkbox"><span>Si trabajas en macOS, revisa primero <a href="#winmac">Windows / macOS</a>.</span></label></li>
+        </ul>
+      </section>
+
+      <section class="block" id="c-interfaz">
+        <header><span class="num">03</span><h2>Reconocer la interfaz</h2></header>
+        <p>CLO puede estar configurado en español o en inglés. Por eso los comandos aparecen en azul y con sus dos nombres, por ejemplo <span class="cmd" data-en="Polygon" data-es="Polígono"></span>. Cambia el idioma arriba, en <span class="mono">EN / ES</span>.</p>
+        <p>La <span class="cmd" data-en="3D Window" data-es="Ventana 3D"></span> y la <span class="cmd" data-en="2D Pattern Window" data-es="Ventana de Patrón 2D"></span> están vinculadas: si cambias un patrón en 2D, la prenda se actualiza en 3D.</p>
+        <figure class="shot" data-hot="ui">
+          <button type="button" class="shot-img" data-zoom aria-label="Ampliar captura de la interfaz"><img src="img/c01_interfaz.jpg" alt="Interfaz de CLO con siete zonas numeradas: Ventana 3D, Ventana de Patrón 2D, herramientas 3D y 2D, Navegador de objetos, Editor de propiedades y barra de menús" width="1685" height="906" loading="lazy"><span class="spot" data-n="1" style="left:23.9%;top:38.8%"></span><span class="spot" data-n="2" style="left:63%;top:38.8%"></span><span class="spot" data-n="3" style="left:7.5%;top:31.9%"></span><span class="spot" data-n="4" style="left:80.4%;top:27.7%"></span><span class="spot" data-n="5" style="left:92.6%;top:30.5%"></span><span class="spot" data-n="6" style="left:92.6%;top:74%"></span><span class="spot" data-n="7" style="left:41.6%;top:1.6%"></span></button>
+          <figcaption>CLO 2026.1.310 con la interfaz en español. Captura: Matías Pezoa. Pasa el cursor por la tabla para ubicar cada zona; toca la imagen para ampliarla.</figcaption>
+        </figure>
+        <div class="tbl-wrap">
+          <table class="hot-tbl" data-hot="ui">
+            <thead><tr><th>N°</th><th>Zona</th><th>Para qué sirve</th></tr></thead>
+            <tbody>
+              <tr data-n="1" tabindex="0"><td class="mono">1</td><td><span class="cmd" data-en="3D Window" data-es="Ventana 3D"></span></td><td>Avatar, prenda, cámara y simulación</td></tr>
+              <tr data-n="2" tabindex="0"><td class="mono">2</td><td><span class="cmd" data-en="2D Pattern Window" data-es="Ventana de Patrón 2D"></span></td><td>Dibujo y edición de patrones</td></tr>
+              <tr data-n="3" tabindex="0"><td class="mono">3</td><td><span class="cmd" data-en="3D Tools" data-es="Herramientas 3D"></span></td><td>Barras a la izquierda de la Ventana 3D</td></tr>
+              <tr data-n="4" tabindex="0"><td class="mono">4</td><td><span class="cmd" data-en="2D Tools" data-es="Herramientas 2D"></span></td><td>Barra a la derecha de la Ventana de Patrón 2D</td></tr>
+              <tr data-n="5" tabindex="0"><td class="mono">5</td><td><span class="cmd" data-en="Object Browser" data-es="Navegador de objetos"></span></td><td>Tejidos y otros elementos del proyecto</td></tr>
+              <tr data-n="6" tabindex="0"><td class="mono">6</td><td><span class="cmd" data-en="Property Editor" data-es="Editor de propiedades"></span></td><td>Parámetros del objeto seleccionado</td></tr>
+              <tr data-n="7" tabindex="0"><td class="mono">7</td><td><span class="cmd" data-en="Menu bar" data-es="Barra de menús"></span></td><td>Archivo, Editar, Avatar, Tejido y el resto de los menús</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="block" id="c-avatar">
+        <header><span class="num">04</span><h2>Cargar el avatar</h2></header>
+        <p>Abre la <span class="cmd" data-en="Library" data-es="Biblioteca"></span> y entra en <span class="cmd" data-en="Avatar" data-es="Avatar"></span> (1). Elige una carpeta, por ejemplo <span class="cmd" data-en="Female" data-es="Female"></span> (2), y abre el avatar que vas a usar.</p>
+        <figure class="shot" data-hot="av">
+          <button type="button" class="shot-img" data-zoom aria-label="Ampliar captura de la Biblioteca"><img src="img/c01_cargar_avatar.jpg" alt="Ventana de la Biblioteca abierta sobre la interfaz: (1) Avatar en la columna izquierda, (2) carpetas de avatares" width="1685" height="906" loading="lazy"><span class="spot" data-n="1" style="left:25.9%;top:39.2%"></span><span class="spot" data-n="2" style="left:45.1%;top:44.3%"></span></button>
+          <figcaption>CLO 2026.1.310 con la interfaz en español. Captura: Matías Pezoa.</figcaption>
+        </figure>
+        <ol class="mini-steps hot-tbl" data-hot="av">
+          <li data-n="1" tabindex="0"><b>1</b><span><span class="cmd" data-en="Library" data-es="Biblioteca"></span> → <span class="cmd" data-en="Avatar" data-es="Avatar"></span></span></li>
+          <li data-n="2" tabindex="0"><b>2</b><span>Una carpeta, por ejemplo <span class="cmd" data-en="Female" data-es="Female"></span>, y abre el avatar que vas a usar</span></li>
+        </ol>
+      </section>
+
+      <section class="block" id="c-silueta">
+        <header><span class="num">05</span><h2>Silueta del avatar</h2></header>
+        <p>Con el avatar cargado (1), su proyección gris aparece en la <span class="cmd" data-en="2D Pattern Window" data-es="Ventana de Patrón 2D"></span> (2). Sirve para estimar proporciones y dibujar un vestido holgado.</p>
+        <figure class="shot" data-hot="si">
+          <button type="button" class="shot-img" data-zoom aria-label="Ampliar captura de la silueta del avatar"><img src="img/c01_silueta.jpg" alt="(1) Avatar en la Ventana 3D y (2) su silueta gris en la Ventana de Patrón 2D" width="1685" height="906" loading="lazy"><span class="spot" data-n="1" style="left:31.9%;top:29.6%"></span><span class="spot" data-n="2" style="left:68.2%;top:30.5%"></span></button>
+          <figcaption>CLO 2026.1.310 con la interfaz en español. Captura: Matías Pezoa.</figcaption>
+        </figure>
+        <ol class="mini-steps hot-tbl" data-hot="si">
+          <li data-n="1" tabindex="0"><b>1</b><span>Avatar cargado en la <span class="cmd" data-en="3D Window" data-es="Ventana 3D"></span></span></li>
+          <li data-n="2" tabindex="0"><b>2</b><span>Su proyección gris en la <span class="cmd" data-en="2D Pattern Window" data-es="Ventana de Patrón 2D"></span></span></li>
+        </ol>
+        <p class="callout">No calques el cuerpo ni ingreses medidas: deja holgura en busto, cintura y cadera. Esta proyección no reemplaza un patrón técnico.</p>
+      </section>
+
+      <section class="block" id="c-flujo">
+        <header><span class="num">06</span><h2>Flujo de trabajo</h2></header>
+        <p>Ocho momentos, del primer trazo al archivo guardado. Toca uno para abrirlo en la guía práctica, donde cada paso está desarrollado.</p>
+        <ol class="flow" id="flow-rows"></ol>
+      </section>
+
+      <section class="block" id="c-ops">
+        <header><span class="num">07</span><h2>Operaciones fundamentales</h2></header>
+        <div class="ops">
+          <div class="op"><span class="n">A · cámara</span><h3>Navegar</h3><p>Cambia el encuadre. La pieza no se mueve.</p><div class="cmds"><span class="cmd" data-en="Orbit" data-es="Orbitar"></span><span class="cmd" data-en="Pan" data-es="Desplazar vista"></span><span class="cmd" data-en="Zoom" data-es="Acercar o alejar"></span></div></div>
+          <div class="op"><span class="n">B · pieza</span><h3>Transformar</h3><p>Cambia la posición u orientación de una pieza.</p><div class="cmds"><span class="cmd" data-en="Transform Pattern" data-es="Transformar patrón"></span><span class="cmd" data-en="Select/Move" data-es="Seleccionar/Mover"></span></div></div>
+          <div class="op"><span class="n">C · contorno</span><h3>Editar</h3><p>Modifica los puntos y segmentos del contorno.</p><div class="cmds"><span class="cmd" data-en="Edit Pattern" data-es="Editar patrón"></span></div></div>
+          <div class="op"><span class="n">D · unión</span><h3>Coser</h3><p>Une bordes compatibles de dos patrones.</p><div class="cmds"><span class="cmd" data-en="Segment Sewing" data-es="Costura de segmentos"></span></div></div>
+          <div class="op"><span class="n">E · física</span><h3>Simular</h3><p>Calcula cómo cae la tela y cómo choca con el avatar.</p><div class="cmds"><span class="cmd" data-en="Simulate" data-es="Simular"></span></div></div>
+        </div>
+        <p class="note">Navegar mueve tu punto de vista. Transformar mueve la pieza. Si al girar la vista la prenda “se mueve”, revisa qué herramienta tienes activa.</p>
+      </section>
+
+      <section class="block" id="c-anatomia">
+        <header><span class="num">08</span><h2>Anatomía del vestido</h2></header>
+        <p>Dos patrones independientes, delantero y espalda, unidos por cuatro costuras: los dos hombros y los dos costados. Escote, sisas y ruedo quedan abiertos.</p>
+        <div class="fig">
+          <div class="legend" id="anat-legend">
+            <button type="button" class="chip sew" data-part="shoulder"><i></i>H · Hombros · se cose</button>
+            <button type="button" class="chip sew" data-part="side"><i></i>C · Costados · se cose</button>
+            <button type="button" class="chip" data-part="neck"><i></i>Escote · abierto</button>
+            <button type="button" class="chip" data-part="armhole"><i></i>Sisas · abiertas</button>
+            <button type="button" class="chip" data-part="hem"><i></i>Ruedo · abierto</button>
+          </div>
+          <svg id="anat" viewBox="-66 -16 262 136" role="img" aria-label="Delantero y espalda del vestido con costuras de hombro y costado en azul"></svg>
+          <p class="caption" id="anat-cap">Azul: se cose (H hombros, C costados). Negro: queda abierto. Toca una parte para aislarla.</p>
+        </div>
+      </section>
+
+
+      <section class="block" id="c-referencia">
+        <header><span class="num">09</span><h2>Referencia de resultado</h2></header>
+        <p>La prenda simulada (1) y sus patrones en la <span class="cmd" data-en="2D Pattern Window" data-es="Ventana de Patrón 2D"></span> (2). Cada pieza 2D corresponde a una parte de la prenda en 3D.</p>
+        <p class="callout dark">Ojo: esta captura muestra un vestido de varias piezas y con mangas. Sirve para ver la relación entre patrones 2D y prenda 3D. No es el patrón que se pide en la clase 01.</p>
+        <figure class="shot" data-hot="re">
+          <button type="button" class="shot-img" data-zoom aria-label="Ampliar captura de la referencia de resultado"><img src="img/c01_referencia.jpg" alt="(1) Vestido simulado sobre el avatar y (2) sus patrones en la Ventana de Patrón 2D" width="1685" height="906" loading="lazy"><span class="spot" data-n="1" style="left:32.9%;top:27.7%"></span><span class="spot" data-n="2" style="left:49.8%;top:35.1%"></span></button>
+          <figcaption>CLO 2026.1.310 con la interfaz en español. Captura: Matías Pezoa.</figcaption>
+        </figure>
+        <ol class="mini-steps hot-tbl" data-hot="re">
+          <li data-n="1" tabindex="0"><b>1</b><span>Prenda simulada en la <span class="cmd" data-en="3D Window" data-es="Ventana 3D"></span></span></li>
+          <li data-n="2" tabindex="0"><b>2</b><span>Sus patrones en la <span class="cmd" data-en="2D Pattern Window" data-es="Ventana de Patrón 2D"></span></span></li>
+        </ol>
+      </section>
+
+      <section class="block" id="c-entrega">
+        <header><span class="num">10</span><h2>Entrega</h2></header>
+        <p>El vestido base con al menos un rasgo modificado por ti. Sube a Canvas:</p>
+        <div class="deliver">
+          <div><span class="k">Proyecto</span><span class="mono">CLO_C01_Apellido_Nombre.zprj</span></div>
+          <div><span class="k">Captura</span><span>Vista frontal en <span class="mono">.png</span> o <span class="mono">.jpg</span>, donde se vea el cambio.</span></div>
+          <div><span class="k">Comentario</span><span>Una línea: qué rasgo cambiaste y cómo.</span></div>
+        </div>
+        <div class="namer">
+          <span class="label">Arma el nombre de tu archivo ↘</span>
+          <div class="fields">
+            <label for="nm-ap">Apellido<input id="nm-ap" type="text" autocomplete="off" placeholder="Apellido"></label>
+            <label for="nm-no">Nombre<input id="nm-no" type="text" autocomplete="off" placeholder="Nombre"></label>
+          </div>
+          <div class="out"><code id="nm-out">CLO_C01_Apellido_Nombre.zprj</code><button type="button" id="nm-copy">Copiar</button></div>
+        </div>
+      </section>
+
+      <section class="block" id="c-logro">
+        <header><span class="num">11</span><h2>Criterio de logro</h2></header>
+        <p>No se exige calce perfecto. Se evalúa que el vestido funcione y que el cambio sea tuyo.</p>
+        <div class="meter" data-meter="c01-logro"><span class="txt">0/5</span><span class="bar"></span></div>
+        <ul class="check" data-store="c01-logro">
+          <li><label><input type="checkbox"><span>El vestido es reconocible y se mantiene estable sobre el avatar.</span></label></li>
+          <li><label><input type="checkbox"><span>Los dos patrones están cerrados.</span></label></li>
+          <li><label><input type="checkbox"><span>Las cuatro costuras unen los bordes correctos.</span></label></li>
+          <li><label><input type="checkbox"><span>Hay al menos un rasgo modificado y se nota en la captura.</span></label></li>
+          <li><label><input type="checkbox"><span>El <span class="mono">.zprj</span> y la captura están guardados y subidos.</span></label></li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CLASE 01 · PRÁCTICA ================= -->
+<section class="view" data-view="clase01-practica" hidden>
+  <a class="back" href="#clases">↖ Todas las clases</a>
+  <div class="doc-head">
+    <div class="doc-title">
+      <span class="label">Clase 01 · Guía práctica · 9 pasos ↘</span>
+      <h1 class="big">Primer vestido, paso a paso</h1>
+      <p class="lead">Construye el vestido base y luego hazlo tuyo cambiando un rasgo.</p>
+    </div>
+    <div class="facts">
+      <dl>
+        <div><dt>Producto</dt><dd>Vestido sin mangas, sin pinzas</dd></div>
+        <div><dt>Piezas</dt><dd>Delantero y espalda</dd></div>
+        <div><dt>Costuras</dt><dd>4 · dos hombros, dos costados</dd></div>
+        <div><dt>Entrega</dt><dd>Canvas: <span class="mono">.zprj</span> + captura</dd></div>
+        <div><dt>Autoría</dt><dd>Matías Pezoa</dd></div>
+      </dl>
+    </div>
+  </div>
+  <nav class="tabs" aria-label="Documentos de la clase 01">
+    <a href="#clase01"><span class="mono">01</span>Guía de contenidos</a>
+    <a href="#clase01-practica"><span class="mono">02</span>Guía práctica · 9 pasos</a>
+  </nav>
+
+  <div class="final">
+    <span class="big">→</span>
+    <p>Producto final: un vestido sin mangas, holgado y sin pinzas, construido con dos piezas, delantero y espalda, y con al menos un rasgo que cambiaste tú.</p>
+  </div>
+
+  <div>
+    <div class="progress"><div class="meter" id="step-meter"><span class="txt">0/9 pasos</span><span class="bar"></span></div></div>
+    <div class="steps" id="steps"></div>
+  </div>
+
+  <section class="block">
+    <header><span class="num">↘</span><h2>Problemas frecuentes</h2></header>
+    <div class="acc" id="faq"></div>
+  </section>
+
+  <section class="block">
+    <header><span class="num">↘</span><h2>Autoevaluación</h2></header>
+    <p>Antes de entregar, revisa si puedes hacer cada una de estas cosas sin ayuda.</p>
+    <div class="meter" data-meter="c01-auto"><span class="txt">0/6</span><span class="bar"></span></div>
+    <ul class="check" data-store="c01-auto">
+      <li><label><input type="checkbox"><span>Navegar la vista 3D con <span class="cmd" data-en="Orbit" data-es="Orbitar"></span>, <span class="cmd" data-en="Pan" data-es="Desplazar vista"></span> y <span class="cmd" data-en="Zoom" data-es="Acercar o alejar"></span>.</span></label></li>
+      <li><label><input type="checkbox"><span>Dibujar dos piezas cerradas.</span></label></li>
+      <li><label><input type="checkbox"><span>Coser las cuatro uniones.</span></label></li>
+      <li><label><input type="checkbox"><span>Simular y corregir lo que falle.</span></label></li>
+      <li><label><input type="checkbox"><span>Modificar un rasgo sin romper las costuras.</span></label></li>
+      <li><label><input type="checkbox"><span>Guardar el <span class="mono">.zprj</span> y la captura.</span></label></li>
+    </ul>
+  </section>
+
+  <section class="block">
+    <header><span class="num">+</span><h2>Si terminas antes</h2></header>
+    <ul class="rows">
+      <li><div class="ghost" style="color:var(--ink)"><span class="n" style="-webkit-text-stroke:0;color:var(--blue)">+1</span><div class="ttl">Combina dos rasgos, por ejemplo largo y escote, y compara las capturas.</div><span></span></div></li>
+      <li><div class="ghost" style="color:var(--ink)"><span class="n" style="-webkit-text-stroke:0;color:var(--blue)">+2</span><div class="ttl">Asigna otra tela desde el <span class="cmd" data-en="Object Browser" data-es="Navegador de objetos"></span> y observa cómo cambia la caída.</div><span></span></div></li>
+    </ul>
+  </section>
+</section>
+
+<!-- ================= GLOSARIO ================= -->
+<section class="view" data-view="glosario" hidden>
+  <div class="doc-head">
+    <div class="doc-title" style="background:var(--black-tile);color:var(--on-black)">
+      <span class="label">03 · Glosario · versión 1.1 ↘</span>
+      <h1 class="big">Glosario de comandos</h1>
+      <p class="lead">Cada comando con su nombre en inglés y en español, para que lo encuentres en cualquier versión de la interfaz.</p>
+    </div>
+    <div class="facts">
+      <dl>
+        <div><dt>Entradas</dt><dd id="gl-count">24</dd></div>
+        <div><dt>Se actualiza</dt><dd>Cada clase</dd></div>
+        <div><dt>Última</dt><dd>Clase 01</dd></div>
+        <div><dt>Autoría</dt><dd>Matías Pezoa</dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <section class="block">
+    <header><span class="num">↘</span><h2>Buscar</h2></header>
+    <p>CLO se puede usar en español o en inglés. Aquí tienes los dos nombres de cada comando, para que lo encuentres en la versión que tengas abierta. Algunos nombres en español cambian entre versiones: se muestra el de CLO 2026.1 y, debajo, el otro que puedes encontrar.</p>
+    <div class="gl-tools">
+      <input type="text" id="gl-q" placeholder="Busca en inglés o español: costura, zoom, pattern…" autocomplete="off" aria-label="Buscar en el glosario">
+      <div class="mini-seg" id="gl-cats" role="group" aria-label="Filtrar por categoría"></div>
+    </div>
+    <div class="gl" id="gl"></div>
+  </section>
+
+  <section class="block">
+    <header><span class="num">?</span><h2>Ponte a prueba</h2></header>
+    <p>Aparece un comando en un idioma. Piensa cómo se llama en el otro y para qué sirve, y toca la tarjeta para comprobarlo.</p>
+    <div class="flash-ctrl">
+      <div class="mini-seg" role="group" aria-label="Dirección de la prueba">
+        <button type="button" data-dir="en" aria-pressed="true">Inglés → español</button>
+        <button type="button" data-dir="es" aria-pressed="false">Español → inglés</button>
+      </div>
+      <span class="mono" id="fl-score" style="font-size:.8rem;margin-left:auto">0 aciertos · 0 vistas</span>
+    </div>
+    <div class="flash">
+      <button type="button" class="card" id="fl-front"><span class="label" id="fl-cat"></span><span class="q" id="fl-q"></span><span class="label">Toca para ver la respuesta ↘</span></button>
+      <div class="card back" id="fl-back"><span class="label">Respuesta</span><span class="a" id="fl-a">?</span><span id="fl-u" style="opacity:.75"></span></div>
+    </div>
+    <div class="flash-ctrl">
+      <button type="button" class="btn pri" id="fl-yes">Lo sabía</button>
+      <button type="button" class="btn" id="fl-no">Repasar</button>
+      <button type="button" class="btn" id="fl-reset" style="margin-left:auto">Reiniciar</button>
+    </div>
+  </section>
+</section>
+
+<!-- ================= WINDOWS / MAC ================= -->
+<section class="view" data-view="winmac" hidden>
+  <div class="doc-head">
+    <div class="doc-title" style="background:var(--tile);color:var(--ink)">
+      <span class="label">04 · Referencia rápida · laboratorio ↘</span>
+      <h1 class="big">Windows y macOS</h1>
+      <p class="lead">Teclado, mouse y comandos. Qué cambia de un sistema a otro y qué no.</p>
+    </div>
+    <div class="facts">
+      <dl>
+        <div><dt>Úsalo</dt><dd>Al instalar y antes de clase</dd></div>
+        <div><dt>Archivo</dt><dd><span class="mono">.zprj</span>, igual en ambos</dd></div>
+        <div><dt>Autoría</dt><dd>Matías Pezoa</dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="os-big" role="group" aria-label="Elige tu sistema">
+    <button type="button" data-os="win"><span>Windows</span><span class="mono" style="font-size:.9rem">Ctrl</span></button>
+    <button type="button" data-os="mac"><span>macOS</span><span class="mono" style="font-size:.9rem">⌘</span></button>
+  </div>
+
+  <section class="block">
+    <header><span class="num">→</span><h2>En corto</h2></header>
+    <p class="statement">Las herramientas de CLO se llaman igual en los dos sistemas. Cambian las teclas modificadoras, el uso del mouse o del trackpad y la ubicación de algunos menús.</p>
+  </section>
+
+  <section class="block">
+    <header><span class="num">01</span><h2>Teclado</h2></header>
+    <div class="tbl-wrap"><table class="os-tbl">
+      <thead><tr><th>Acción</th><th class="os-col" data-c="win">Windows</th><th class="os-col" data-c="mac">macOS</th></tr></thead>
+      <tbody>
+        <tr><td>Guardar</td><td class="os-col" data-c="win"><kbd>Ctrl + S</kbd></td><td class="os-col" data-c="mac"><kbd>⌘ + S</kbd></td></tr>
+        <tr><td>Copiar</td><td class="os-col" data-c="win"><kbd>Ctrl + C</kbd></td><td class="os-col" data-c="mac"><kbd>⌘ + C</kbd></td></tr>
+        <tr><td>Pegar</td><td class="os-col" data-c="win"><kbd>Ctrl + V</kbd></td><td class="os-col" data-c="mac"><kbd>⌘ + V</kbd></td></tr>
+        <tr><td>Deshacer</td><td class="os-col" data-c="win"><kbd>Ctrl + Z</kbd></td><td class="os-col" data-c="mac"><kbd>⌘ + Z</kbd></td></tr>
+        <tr><td>Rehacer *</td><td class="os-col" data-c="win"><kbd>Ctrl + Y</kbd> o <kbd>Ctrl + Shift + Z</kbd></td><td class="os-col" data-c="mac"><kbd>⌘ + Shift + Z</kbd></td></tr>
+        <tr><td>Seleccionar todo *</td><td class="os-col" data-c="win"><kbd>Ctrl + A</kbd></td><td class="os-col" data-c="mac"><kbd>⌘ + A</kbd></td></tr>
+        <tr><td>Cancelar</td><td class="os-col" data-c="win"><kbd>Esc</kbd></td><td class="os-col" data-c="mac"><kbd>Esc</kbd></td></tr>
+        <tr><td><span class="cmd" data-en="Simulate" data-es="Simular"></span> *</td><td class="os-col" data-c="win"><kbd>Barra espaciadora</kbd></td><td class="os-col" data-c="mac"><kbd>Barra espaciadora</kbd></td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">* Estos atajos dependen de la configuración y del contexto dentro de CLO. Verifícalos en tu instalación: los atajos del sistema no siempre coinciden con los de cada herramienta.</p>
+  </section>
+
+  <section class="block">
+    <header><span class="num">02</span><h2>Mouse y trackpad</h2></header>
+    <div class="tbl-wrap"><table class="os-tbl">
+      <thead><tr><th>Acción</th><th class="os-col" data-c="win">Windows · mouse</th><th class="os-col" data-c="mac">macOS · mouse o trackpad</th></tr></thead>
+      <tbody>
+        <tr><td><span class="cmd" data-en="Zoom" data-es="Acercar o alejar"></span></td><td class="os-col" data-c="win">Rueda</td><td class="os-col" data-c="mac">Rueda o gesto configurado</td></tr>
+        <tr><td><span class="cmd" data-en="Pan" data-es="Desplazar vista"></span></td><td class="os-col" data-c="win">Botón central, según el preset</td><td class="os-col" data-c="mac">Mouse con botón central o gesto configurado</td></tr>
+        <tr><td><span class="cmd" data-en="Orbit" data-es="Orbitar"></span></td><td class="os-col" data-c="win">Según <span class="cmd" data-en="View Control" data-es="Control de vista"></span></td><td class="os-col" data-c="mac">Según <span class="cmd" data-en="View Control" data-es="Control de vista"></span></td></tr>
+        <tr><td>Clic secundario</td><td class="os-col" data-c="win">Botón derecho</td><td class="os-col" data-c="mac">Clic secundario configurado</td></tr>
+        <tr><td>Selección múltiple</td><td class="os-col" data-c="win"><kbd>Shift</kbd> + clic, según la herramienta</td><td class="os-col" data-c="mac"><kbd>Shift</kbd> + clic, según la herramienta</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="block">
+    <header><span class="num">03</span><h2>Configuración recomendada</h2></header>
+    <ul class="check" data-store="wm-config">
+      <li><label><input type="checkbox"><span>Usa un mouse externo de tres botones con rueda, en cualquiera de los dos sistemas.</span></label></li>
+      <li><label><input type="checkbox"><span>En macOS, activa el clic secundario en los ajustes del sistema y revisa los gestos del trackpad.</span></label></li>
+      <li><label><input type="checkbox"><span>En CLO, abre <span class="cmd" data-en="Settings > User Settings > View Control" data-es="Configuración > Configuración de usuario > Control de vista"></span> (o su equivalente en tu versión) y deja todos los equipos con el mismo preset de navegación.</span></label></li>
+      <li><label><input type="checkbox"><span>Antes de clase, revisa en los menús de CLO los atajos reales de <span class="cmd" data-en="Redo" data-es="Rehacer"></span>, selección y <span class="cmd" data-en="Simulate" data-es="Simular"></span>.</span></label></li>
+    </ul>
+  </section>
+
+  <section class="block">
+    <header><span class="num">04</span><h2>Qué no cambia</h2></header>
+    <p class="statement">El flujo de trabajo y el formato de archivo son los mismos. Un <span class="mono">.zprj</span> guardado en Windows se abre en macOS, y al revés.</p>
+    <ol class="flow igual" aria-label="Flujo igual en los dos sistemas">
+      <li style="--x:0"><span class="pill"><span class="mono">01</span><span class="cmd" data-en="Polygon" data-es="Polígono"></span></span></li>
+      <li style="--x:16"><span class="pill"><span class="mono">02</span><span class="cmd" data-en="Transform Pattern" data-es="Transformar patrón"></span></span></li>
+      <li style="--x:7"><span class="pill"><span class="mono">03</span><span class="cmd" data-en="Select/Move" data-es="Seleccionar/Mover"></span></span></li>
+      <li style="--x:22"><span class="pill"><span class="mono">04</span><span class="cmd" data-en="Segment Sewing" data-es="Costura de segmentos"></span></span></li>
+      <li style="--x:9"><span class="pill"><span class="mono">05</span><span class="cmd" data-en="Simulate" data-es="Simular"></span></span></li>
+      <li style="--x:19"><span class="pill"><span class="mono">06</span><span class="cmd" data-en="Save As" data-es="Guardar como"></span></span></li>
+    </ol>
+  </section>
+
+  <section class="block">
+    <header><span class="num">05</span><h2>Prueba del laboratorio</h2></header>
+    <p>Prueba cada acción en los dos equipos y marca lo que funciona. Si un atajo es distinto, anótalo. Tus marcas quedan guardadas en este navegador.</p>
+    <div class="tbl-wrap"><table class="lab-tbl" id="lab-tbl">
+      <thead><tr><th>Prueba</th><th>Win</th><th>Mac</th><th>Notas</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+</section>
+
+<!-- ================= RECURSOS ================= -->
+<section class="view" data-view="recursos" hidden>
+  <div class="doc-head">
+    <div class="doc-title">
+      <span class="label">Recursos ↘</span>
+      <h1 class="big">Manuales y referencias</h1>
+      <p class="lead">Documentación oficial de CLO y material de apoyo del curso. Los enlaces abren en una pestaña nueva.</p>
+    </div>
+    <div class="facts">
+      <dl>
+        <div><dt>Fuente</dt><dd>support.clo3d.com</dd></div>
+        <div><dt>Ojo</dt><dd>Las capturas de los manuales pueden diferir de la interfaz que tienes instalada.</dd></div>
+      </dl>
+    </div>
+  </div>
+  <section class="block">
+    <header><span class="num">01</span><h2>Documentación oficial</h2></header>
+    <ul class="links">
+      <li><a href="https://support.clo3d.com/hc/en-us/categories/115000064648-Manual" target="_blank" rel="noopener"><div><div class="t">Manual de CLO</div><div class="d">Consulta de funciones y rutas de la versión actual.</div></div><span>↗</span></a></li>
+      <li><a href="https://support.clo3d.com/hc/en-us/articles/115000498767--2D-Tool-Segment-Sewing" target="_blank" rel="noopener"><div><div class="t"><span class="cmd" data-en="Segment Sewing" data-es="Costura de segmentos"></span></div><div class="d">Selección de segmentos y dirección de costura.</div></div><span>↗</span></a></li>
+      <li><a href="https://support.clo3d.com/hc/en-us/articles/115012380388-Project-File-Open-Save" target="_blank" rel="noopener"><div><div class="t">Project File Open / Save</div><div class="d">Abrir y guardar proyectos <span class="mono">.zprj</span>.</div></div><span>↗</span></a></li>
+      <li><a href="https://support.clo3d.com/hc/en-us/article_attachments/48293801440281" target="_blank" rel="noopener"><div><div class="t">CLO Creator’s Field Guide (2022)</div><div class="d">Interfaz y navegación pp. 7–15 · simulación pp. 18–20 · costuras p. 25 · patrones pp. 33–35.</div></div><span>↗</span></a></li>
+    </ul>
+  </section>
+  <section class="block">
+    <header><span class="num">02</span><h2>En esta web</h2></header>
+    <ul class="links">
+      <li><a href="#glosario"><div><div class="t">Glosario de comandos</div><div class="d">24 entradas en inglés y español, con buscador y prueba.</div></div><span>↘</span></a></li>
+      <li><a href="#winmac"><div><div class="t">Windows y macOS</div><div class="d">Atajos, mouse, configuración y prueba del laboratorio.</div></div><span>↘</span></a></li>
+      <li><a href="#clase01-practica"><div><div class="t">Laboratorio de rasgos</div><div class="d">Prueba largo, escote, holgura, vuelo, sisa y hombro antes de hacerlo en CLO.</div></div><span>↘</span></a></li>
+    </ul>
+  </section>
+</section>
+
+</main>
+
+<dialog id="lb" aria-label="Captura ampliada"><div class="lb-in"><img id="lb-img" alt=""><div class="lb-bar"><span id="lb-cap"></span><button type="button" id="lb-close">Cerrar ✕</button></div></div></dialog>
+
+<footer><div class="wrap"><span>Fabricación Digital 2026 · Módulo CLO 3D</span><span>Matías Pezoa</span></div></footer>
+
+<script>
+(function(){
+"use strict";
+
+/* ============ DATOS DEL CURSO (agregar clases aquí) ============ */
+const CLASES = [
+  {n:"01", titulo:"Interfaz, navegación y primer vestido", meta:"Entrega: vestido con un rasgo propio · .zprj + captura", href:"#clase01"},
+  {n:"02", titulo:"Próxima clase", meta:"Se publica después de la clase 01", href:null}
+];
+
+const PASOS = [
+  {t:"Preparar el entorno", c:[], b:"Abre un proyecto con avatar. Muestra las ventanas 2D y 3D y activa la silueta del avatar en 2D. Deja la simulación detenida."},
+  {t:"Dibujar el delantero", c:[["Polygon","Polígono"]], b:"Activa {Polygon|Polígono} y usa la proyección frontal como guía. Traza hombros, escote, sisas, costados y ruedo con holgura. Para cerrar el contorno, termina con un clic en el punto inicial."},
+  {t:"Crear la espalda", c:[["Transform Pattern","Transformar patrón"],["Edit Pattern","Editar patrón"]], b:"Selecciona el delantero con {Transform Pattern|Transformar patrón}, cópialo y pégalo como pieza independiente. Sepáralo del original y, con {Edit Pattern|Editar patrón}, cambia solo el escote posterior, que normalmente es más alto que el delantero."},
+  {t:"Comprobar bordes", c:[], b:"Revisa que los hombros y los costados de las dos piezas tengan largos compatibles. Mantén los costados simples, sin puntos de más."},
+  {t:"Posicionar en 3D", c:[["Select/Move","Seleccionar/Mover"],["Orbit","Orbitar"]], b:"Con la simulación detenida, usa {Select/Move|Seleccionar/Mover} para poner el delantero frente al torso y la espalda detrás, sin que ninguna pieza atraviese el avatar. Gira la vista con {Orbit|Orbitar} para comprobarlo."},
+  {t:"Coser", c:[["Segment Sewing","Costura de segmentos"]], b:"Une hombro derecho con hombro derecho, izquierdo con izquierdo y cada costado con su par. No cosas el escote, las sisas ni el ruedo.", extra:"sew"},
+  {t:"Simular", c:[["Simulate","Simular"]], b:"Activa {Simulate|Simular} y mira cómo cae la tela. Detén la simulación para revisar. Si la prenda se retuerce o atraviesa el cuerpo, corrige las costuras y la posición antes de volver a simular."},
+  {t:"Modificar un rasgo", c:[["Edit Pattern","Editar patrón"]], b:"Con el vestido base funcionando, elige al menos un rasgo y cámbialo con {Edit Pattern|Editar patrón}. Vuelve a simular después de cada cambio. Prueba aquí antes de hacerlo en CLO.", extra:"lab"},
+  {t:"Guardar y entregar", c:[["Save As","Guardar como"]], b:"Guarda el proyecto como CLO_C01_Apellido_Nombre.zprj y una captura frontal en .png o .jpg donde se vea el cambio. Sube los dos archivos a Canvas y escribe en el comentario qué rasgo cambiaste y cómo.", extra:"save"}
+];
+
+const FAQ = [
+  ["La pieza desaparece","Reencuadra el visor con {Zoom|Acercar o alejar} o con {Front View|Vista frontal}."],
+  ["Costuras cruzadas","Revisa los pares de segmentos y la dirección de costura."],
+  ["La prenda se cae","Comprueba las costuras de hombro y la holgura."],
+  ["La tela atraviesa el avatar","Detén la simulación y recoloca las piezas."],
+  ["Patrón abierto","Cierra el contorno en el punto inicial."],
+  ["Las costuras no calzan tras modificar","Revisa que el cambio esté en las dos piezas."]
+];
+
+const GLOSARIO = [
+  ["Interfaz","2D Pattern Window","Ventana de Patrón 2D","Espacio de trazado"],
+  ["Interfaz","3D Window","Ventana 3D","Avatar y prenda"],
+  ["Interfaz","Object Browser","Navegador de objetos","Lista de objetos"],
+  ["Interfaz","Property Editor","Editor de propiedades","Parámetros"],
+  ["Interfaz","Toolbar","Barra de herramientas","Acceso a herramientas"],
+  ["Navegación","Orbit / Rotate View","Orbitar / Rotar vista","Girar la cámara"],
+  ["Navegación","Pan","Desplazar vista","Mover el encuadre"],
+  ["Navegación","Zoom","Acercar o alejar","Cambiar la escala de la vista"],
+  ["Navegación","Front View","Vista frontal","Ver desde delante"],
+  ["Navegación","Back View","Vista posterior","Ver desde atrás"],
+  ["Patrones","Polygon","Polígono","Dibujar un patrón libre"],
+  ["Patrones","Transform Pattern","Transformar patrón","Mover y rotar el patrón"],
+  ["Patrones","Edit Pattern","Editar patrón","Modificar el contorno"],
+  ["Patrones","Copy / Paste","Copiar / Pegar","Duplicar una pieza"],
+  ["Prenda en 3D","Select/Move","Seleccionar/Mover","Posicionar en 3D"],
+  ["Prenda en 3D","Segment Sewing","Costura de segmentos","Unir bordes"],
+  ["Prenda en 3D","Simulate","Simular","Calcular la caída"],
+  ["Conceptos","Avatar","Avatar","Cuerpo virtual"],
+  ["Conceptos","Pattern","Patrón / pieza de molde","Geometría 2D de la prenda"],
+  ["Conceptos","Seam","Costura","Unión entre piezas"],
+  ["Conceptos","Ease","Holgura","Espacio extra respecto del cuerpo"],
+  ["Archivo","Save As","Guardar como","Crear un archivo nuevo"],
+  ["Archivo","Project (.zprj)","Proyecto (.zprj)","Archivo editable de CLO"],
+  ["Archivo","Undo / Redo","Deshacer / Rehacer","Revertir o repetir"]
+].map(([cat,en,es,uso])=>({cat,en,es,uso,clase:"01"}));
+/* nombres que cambian según la versión de CLO (guía 01 usa CLO 2026.1; glosario 1.1 usa el nombre anterior) */
+const ALT = {"2D Pattern Window":"Ventana de patrones 2D","Object Browser":"Explorador de objetos","Segment Sewing":"Costura por segmento"};
+GLOSARIO.forEach(g=>{ if(ALT[g.en]) g.alt=ALT[g.en]; });
+
+const LAB_TESTS = ["Guardar","Copiar y pegar un patrón","Deshacer","Clic secundario","{Orbit|Orbitar}","{Pan|Desplazar vista}","{Zoom|Acercar o alejar}","{Simulate|Simular}"];
+
+/* ============ utilidades ============ */
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>Array.from(r.querySelectorAll(s));
+const store = {
+  get(k,d){try{const v=localStorage.getItem("clo26:"+k);return v===null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem("clo26:"+k,JSON.stringify(v))}catch(e){}}
+};
+const esc = s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const cmdHTML = (en,es)=>`<span class="cmd" data-en="${esc(en)}" data-es="${esc(es)}"></span>`;
+const rich = s=>esc(s).replace(/\{([^|}]+)\|([^}]+)\}/g,(m,a,b)=>cmdHTML(a,b));
+
+/* ============ idioma y sistema ============ */
+let LANG = store.get("lang","both");
+let OS = store.get("os", /Mac|iPhone|iPad/.test(navigator.platform||navigator.userAgent) ? "mac" : "win");
+
+function paintCmds(root=document){
+  $$(".cmd",root).forEach(el=>{
+    const en=el.dataset.en, es=el.dataset.es;
+    if(LANG==="en") el.innerHTML=esc(en);
+    else if(LANG==="es") el.innerHTML=esc(es);
+    else el.innerHTML = en===es ? esc(en) : `${esc(en)}<span class="sep">/</span><span class="es">${esc(es)}</span>`;
+  });
+  $$("[data-lang]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.lang===LANG)));
+}
+function paintOS(){
+  $$("[data-os]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.os===OS)));
+  $$(".os-col").forEach(c=>c.classList.toggle("sel",c.dataset.c===OS));
+}
+$$("[data-lang]").forEach(b=>b.addEventListener("click",()=>{LANG=b.dataset.lang;store.set("lang",LANG);paintCmds();renderGlossary();showCard()}));
+$$("[data-os]").forEach(b=>b.addEventListener("click",()=>{OS=b.dataset.os;store.set("os",OS);paintOS()}));
+
+/* ============ inicio ============ */
+$("#cl-count").textContent = CLASES.filter(c=>c.href).length;
+const classRowsHTML = CLASES.map(c=> c.href
+  ? `<li><a href="${c.href}"><span class="n">${c.n}</span><div><div class="ttl">${esc(c.titulo)}</div><div class="meta">${esc(c.meta)}</div></div><span class="go">↘</span></a></li>`
+  : `<li><div class="ghost"><span class="n">${c.n}</span><div><div class="ttl">${esc(c.titulo)}</div><div class="meta">${esc(c.meta)}</div></div><span class="go" style="opacity:.3">↘</span></div></li>`
+).join("");
+$$(".class-rows").forEach(ul=>ul.innerHTML=classRowsHTML);
+
+const FLUJO = [["Dibujar delantero",1],["Copiar espalda",2],["Ajustar escote",2],["Posicionar en 3D",4],["Coser hombros y costados",5],["Simular",6],["Modificar un rasgo",7],["Guardar",8]];
+const FLOW_X = [0,14,6,22,12,24,4,18];
+$("#flow-rows").innerHTML = FLUJO.map(([t,st],i)=>`<li style="--x:${FLOW_X[i]}"><a href="#clase01-practica" data-step="${st}"><span class="mono">${String(i+1).padStart(2,"0")}</span>${esc(t)}<span class="go">↘</span></a></li>`).join("");
+$$("#flow-rows a").forEach(a=>a.addEventListener("click",()=>{pendingStep=+a.dataset.step}));
+
+/* ============ checklists ============ */
+function initChecks(){
+  $$(".check[data-store]").forEach(ul=>{
+    const key=ul.dataset.store, saved=store.get(key,[]);
+    const boxes=$$("input",ul);
+    boxes.forEach((b,i)=>{b.id=key+"-"+i;b.checked=!!saved[i];b.addEventListener("change",()=>{store.set(key,boxes.map(x=>x.checked));meter(key)})});
+    meter(key);
+  });
+}
+function meter(key){
+  const m=$(`[data-meter="${key}"]`); if(!m) return;
+  const boxes=$$(`.check[data-store="${key}"] input`); const n=boxes.filter(b=>b.checked).length;
+  m.querySelector(".txt").textContent=`${n}/${boxes.length}`;
+  m.querySelector(".bar").innerHTML=boxes.map((b,i)=>`<i class="${i<n?"on":""}"></i>`).join("");
+}
+
+/* ============ capturas con zonas numeradas ============ */
+$$(".hot-tbl[data-hot]").forEach(host=>{
+  const fig=$(`figure[data-hot="${host.dataset.hot}"]`);
+  const hl=n=>{$$(".spot",fig).forEach(sp=>sp.classList.toggle("on",sp.dataset.n===n)); $$("[data-n]",host).forEach(r=>r.classList.toggle("hl",r.dataset.n===n))};
+  $$("[data-n]",host).forEach(r=>{
+    r.addEventListener("mouseenter",()=>hl(r.dataset.n)); r.addEventListener("mouseleave",()=>hl(null));
+    r.addEventListener("focus",()=>hl(r.dataset.n)); r.addEventListener("blur",()=>hl(null));
+    r.addEventListener("click",()=>hl(r.dataset.n));
+  });
+});
+/* ampliar capturas */
+const lb=$("#lb");
+const lbClose=()=>{ if(lb.close) lb.close(); else lb.removeAttribute("open"); };
+$$("[data-zoom]").forEach(b=>b.addEventListener("click",()=>{
+  const img=b.querySelector("img"); $("#lb-img").src=img.src; $("#lb-img").alt=img.alt;
+  $("#lb-cap").textContent=b.closest("figure").querySelector("figcaption").textContent;
+  try{ lb.showModal(); }catch(e){ lb.setAttribute("open",""); }
+}));
+$("#lb-close").addEventListener("click",lbClose);
+lb.addEventListener("click",e=>{ if(e.target===lb) lbClose(); });
+
+/* ============ geometría del vestido ============ */
+const BASE = {largo:100, forma:"redondo", prof:9, destino:"delantero", holgura:26, vuelo:4, sisa:22, hombro:6};
+function bez(p0,p1,p2,p3,n=14){const o=[];for(let i=0;i<=n;i++){const t=i/n,u=1-t;o.push([u*u*u*p0[0]+3*u*u*t*p1[0]+3*u*t*t*p2[0]+t*t*t*p3[0],u*u*u*p0[1]+3*u*u*t*p1[1]+3*u*t*t*p2[1]+t*t*t*p3[1]])}return o}
+function piece(P,isBack){
+  const applies = P.destino==="ambos" || (P.destino==="espalda")===isBack;
+  const forma = applies ? P.forma : "redondo";
+  const nd = applies ? P.prof : (isBack ? 2.5 : 9);
+  const sx = 8.5 + P.hombro, sy = 3;          /* el tirante termina siempre en el mismo punto */
+  const nh = forma==="bote" ? Math.min(12, sx-1.5) : 8.5;   /* el bote abre el cuello y acorta el hombro */
+  const depth = forma==="bote" ? Math.min(nd,5) : nd;
+  const bh = Math.max(P.holgura, sx+2), ad = P.sisa, L = P.largo, fl = P.vuelo;
+  let neck;
+  if(forma==="v") neck=[[0,depth],[nh,0]];
+  else if(forma==="cuadrado") neck=[[0,depth],[nh,depth],[nh,0]];
+  else if(forma==="bote") neck=bez([0,depth],[nh*.6,depth],[nh*.95,depth*.3],[nh,0]);
+  else neck=bez([0,depth],[nh*.55,depth],[nh,depth*.55],[nh,0]);
+  const seg = {
+    neck,
+    shoulder:[[nh,0],[sx,sy]],
+    armhole:bez([sx,sy],[sx-.5,sy+(ad-sy)*.55],[sx+(bh-sx)*.25,ad],[bh,ad]),
+    side:[[bh,ad],[bh+fl,L]],
+    hem:bez([bh+fl,L],[(bh+fl)*.66,L+fl*.12],[(bh+fl)*.33,L+fl*.15],[0,L+fl*.15])
+  };
+  const right=[...seg.neck,...seg.shoulder.slice(1),...seg.armhole.slice(1),...seg.side.slice(1),...seg.hem.slice(1)];
+  const left=right.slice(1,-1).reverse().map(([x,y])=>[-x,y]);
+  const len = a=>a.reduce((s,p,i)=>i?s+Math.hypot(p[0]-a[i-1][0],p[1]-a[i-1][1]):0,0);
+  return {seg, outline:right.concat(left), shoulderLen:len(seg.shoulder), sideLen:len(seg.side), nh, sx, ad, L};
+}
+const pts = (a,dx=0)=>a.map(([x,y])=>`${(x+dx).toFixed(2)},${y.toFixed(2)}`).join(" ");
+const mir = a=>a.map(([x,y])=>[-x,y]);
+
+/* anatomía */
+const PARTS={shoulder:"H",side:"C",neck:"",armhole:"",hem:""};
+const CAPS={
+  shoulder:"Hombros: se cosen. Hombro derecho con hombro derecho, izquierdo con izquierdo.",
+  side:"Costados: se cosen. Cada costado con su par.",
+  neck:"Escote: queda abierto. El de la espalda normalmente es más alto que el delantero.",
+  armhole:"Sisas: quedan abiertas. Por aquí pasan los brazos.",
+  hem:"Ruedo: queda abierto. Es el borde inferior del vestido."
+};
+function drawAnatomy(){
+  const svg=$("#anat"); let h="";
+  [[false,0,"DELANTERO"],[true,130,"ESPALDA"]].forEach(([back,dx,name])=>{
+    const p=piece(BASE,back);
+    h+=`<polygon class="pc-fill" points="${pts(p.outline,dx)}"/>`;
+    h+=`<text class="pc-lbl" x="${dx}" y="-8" text-anchor="middle">${name}</text>`;
+    h+=`<text class="pc-lbl" style="fill:var(--ink-2)" x="${dx}" y="${p.L+12}" text-anchor="middle">${back?"escote más alto":"escote más bajo"}</text>`;
+    h+=`<line class="ax" x1="${dx}" y1="-4" x2="${dx}" y2="${p.L+4}" stroke-dasharray="2 3"/>`;
+    Object.keys(PARTS).forEach(k=>{
+      [p.seg[k],mir(p.seg[k])].forEach((s,side)=>{
+        h+=`<polyline class="pc-out ${PARTS[k]?"sew":""}" data-part="${k}" points="${pts(s,dx)}"/>`;
+      });
+      if(PARTS[k]){
+        const s=p.seg[k], m=s[Math.floor(s.length/2)] , a=s[0], b=s[s.length-1];
+        const mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2;
+        const off = k==="shoulder" ? [1,-3] : [4,0];
+        h+=`<text class="pc-tag" x="${(mx+off[0]+dx).toFixed(1)}" y="${(my+off[1]).toFixed(1)}" text-anchor="start">${PARTS[k]}</text>`;
+        h+=`<text class="pc-tag" x="${(-mx-off[0]+dx).toFixed(1)}" y="${(my+off[1]).toFixed(1)}" text-anchor="end">${PARTS[k]}</text>`;
+      }
+    });
+  });
+  svg.innerHTML=h;
+}
+let anatSel=null;
+function setAnat(k){
+  anatSel = anatSel===k ? null : k;
+  $$("#anat-legend .chip").forEach(c=>c.setAttribute("aria-pressed",String(c.dataset.part===anatSel)));
+  $$("#anat .pc-out").forEach(l=>{l.classList.toggle("dim",!!anatSel && l.dataset.part!==anatSel);l.classList.toggle("hot",l.dataset.part===anatSel)});
+  $("#anat-cap").textContent = anatSel ? CAPS[anatSel] : "Azul: se cose (H hombros, C costados). Negro: queda abierto. Toca una parte para aislarla.";
+}
+$$("#anat-legend .chip").forEach(c=>{c.setAttribute("aria-pressed","false");c.addEventListener("click",()=>setAnat(c.dataset.part))});
+$("#anat").addEventListener("click",e=>{const k=e.target.dataset&&e.target.dataset.part; if(k) setAnat(k)});
+
+/* ============ pasos ============ */
+let pendingStep=null;
+const stepsDone = store.get("c01-pasos",Array(9).fill(false));
+function labHTML(){return `
+<div class="multi" id="multi" role="group" aria-label="Ejemplos de rasgos modificados"></div>
+<div class="lab" id="lab">
+  <div class="fig">
+    <svg id="lab-svg" viewBox="-66 -16 262 172" role="img" aria-label="Delantero y espalda: línea punteada vestido base, línea negra versión modificada"></svg>
+    <p class="caption">Línea punteada: vestido base. Línea negra: versión modificada. Azul: bordes que se cosen. Mueve los controles o toca un ejemplo de arriba.</p>
+  </div>
+  <div class="ctrls">
+    <div class="ctrl"><div class="top-row"><b>Largo</b><span class="val" id="v-largo"></span></div><input type="range" id="r-largo" min="70" max="145" step="1" aria-label="Largo"><small>Mini, midi o maxi. Mueve los puntos del ruedo.</small></div>
+    <div class="ctrl"><div class="top-row"><b>Escote</b><span class="val" id="v-prof"></span></div>
+      <div class="mini-seg" id="s-forma" role="group" aria-label="Forma del escote"><button type="button" data-v="redondo">Redondo</button><button type="button" data-v="v">En V</button><button type="button" data-v="cuadrado">Cuadrado</button><button type="button" data-v="bote">Bote</button></div>
+      <input type="range" id="r-prof" min="2" max="28" step="1" aria-label="Profundidad del escote">
+      <div class="mini-seg" id="s-destino" role="group" aria-label="Pieza a la que se aplica el escote"><button type="button" data-v="delantero">Delantero</button><button type="button" data-v="espalda">Espalda</button><button type="button" data-v="ambos">Ambos</button></div>
+    </div>
+    <div class="ctrl"><div class="top-row"><b>Holgura</b><span class="val" id="v-holgura"></span></div><input type="range" id="r-holgura" min="22" max="34" step=".5" aria-label="Holgura"><small>Costados más anchos o más cerca del cuerpo, siempre sin pinzas.</small></div>
+    <div class="ctrl"><div class="top-row"><b>Vuelo</b><span class="val" id="v-vuelo"></span></div><input type="range" id="r-vuelo" min="0" max="24" step="1" aria-label="Vuelo"><small>Abre el ruedo hacia afuera para una silueta A más marcada.</small></div>
+    <div class="ctrl"><div class="top-row"><b>Sisa</b><span class="val" id="v-sisa"></span></div><input type="range" id="r-sisa" min="16" max="30" step="1" aria-label="Sisa"><small>Más profunda o más cerrada.</small></div>
+    <div class="ctrl"><div class="top-row"><b>Hombro</b><span class="val" id="v-hombro"></span></div><input type="range" id="r-hombro" min="2" max="10" step=".5" aria-label="Hombro"><small>Tirante más ancho o más angosto.</small></div>
+    <div class="readout" id="readout"></div>
+    <button type="button" class="reset" id="lab-reset">Volver al vestido base</button>
+  </div>
+</div>
+<p class="note">Si el cambio toca hombros o costados, hazlo igual en las dos piezas. Así las costuras siguen coincidiendo. Prueba un escote bote solo en el delantero y mira qué pasa con el hombro.</p>`}
+
+function sewHTML(){return `
+<div class="fig">
+  <div class="mini-seg" id="sew-mode" role="group" aria-label="Dirección de costura"><button type="button" data-v="ok" aria-pressed="true">Misma dirección</button><button type="button" data-v="x" aria-pressed="false">Dirección opuesta</button></div>
+  <div class="sew-demo">
+    <svg id="sew-svg" viewBox="0 0 220 150" role="img" aria-label="Dos segmentos unidos por una costura"></svg>
+    <p class="caption" id="sew-cap"></p>
+  </div>
+</div>`}
+
+function saveHTML(){return `<button type="button" class="btn" id="go-entrega">Arma el nombre de tu archivo ↘</button>`}
+
+function renderSteps(){
+  $("#steps").innerHTML = PASOS.map((p,i)=>`
+  <article class="step${stepsDone[i]?" done":""}" id="paso-${i+1}">
+    <div class="sn">${String(i+1).padStart(2,"0")}</div>
+    <div class="sb">
+      <h3>${esc(p.t)}</h3>
+      ${p.c.length?`<div class="cmdline">${p.c.map(c=>cmdHTML(c[0],c[1])).join("")}</div>`:""}
+      <p>${rich(p.b)}</p>
+      ${p.extra==="sew"?`<div class="fig"><svg class="anat-mini" viewBox="-66 -16 262 136" role="img" aria-label="Delantero y espalda: hombros H y costados C se cosen"></svg><p class="caption">Azul: se cose (H hombros, C costados). Negro: queda abierto.</p></div><p class="note">Marca los dos segmentos en la misma dirección, por ejemplo de arriba hacia abajo. Si no, la costura queda cruzada.</p>${sewHTML()}`:""}
+      ${p.extra==="lab"?labHTML():""}
+      ${p.extra==="save"?saveHTML():""}
+      <button type="button" class="done-btn" data-i="${i}" aria-pressed="${stepsDone[i]}">${stepsDone[i]?"✓ Hecho":"Marcar como hecho"}</button>
+    </div>
+  </article>`).join("");
+  $$(".done-btn").forEach(b=>b.addEventListener("click",()=>{
+    const i=+b.dataset.i; stepsDone[i]=!stepsDone[i]; store.set("c01-pasos",stepsDone);
+    b.setAttribute("aria-pressed",String(stepsDone[i])); b.textContent=stepsDone[i]?"✓ Hecho":"Marcar como hecho";
+    b.closest(".step").classList.toggle("done",stepsDone[i]); stepMeter();
+  }));
+  $("#go-entrega").addEventListener("click",()=>{pendingAnchor="c-entrega";location.hash="clase01"});
+  $$(".anat-mini").forEach(el=>el.innerHTML=$("#anat").innerHTML);
+  initLab(); initSew(); stepMeter();
+}
+function stepMeter(){
+  const n=stepsDone.filter(Boolean).length, m=$("#step-meter");
+  m.querySelector(".txt").textContent=`${n}/9 pasos`;
+  m.querySelector(".bar").innerHTML=stepsDone.map(d=>`<i class="${d?"on":""}"></i>`).join("");
+}
+
+/* laboratorio de rasgos */
+let P = Object.assign({},BASE);
+const fmt = v=>`${(+v).toFixed(v%1?1:0)} cm`;
+function largoName(v){return v<90?"mini":v<118?"midi":"maxi"}
+function initLab(){
+  ["largo","prof","holgura","vuelo","sisa","hombro"].forEach(k=>{
+    const r=$("#r-"+k); r.value=P[k];
+    r.addEventListener("input",()=>{P[k]=+r.value;drawLab()});
+  });
+  [["#s-forma","forma"],["#s-destino","destino"]].forEach(([sel,key])=>{
+    $$(sel+" button").forEach(b=>b.addEventListener("click",()=>{P[key]=b.dataset.v;drawLab()}));
+  });
+  $("#lab-reset").addEventListener("click",()=>{P=Object.assign({},BASE);["largo","prof","holgura","vuelo","sisa","hombro"].forEach(k=>$("#r-"+k).value=P[k]);drawLab()});
+  drawMulti();
+  drawLab();
+}
+const RASGOS = [
+  ["Largo","más largo o más corto",{largo:125}],
+  ["Escote","más profundo u otra forma",{forma:"v",prof:18}],
+  ["Holgura","costados más anchos",{holgura:31}],
+  ["Vuelo","ruedo más abierto",{vuelo:16}]
+];
+function drawMulti(){
+  $("#multi").innerHTML = RASGOS.map(([t,cap,v],i)=>{
+    const b=piece(BASE,false), m=piece(Object.assign({},BASE,v),false);
+    let h=`<polygon class="pc-base" points="${pts(b.outline)}"/>`;
+    ["neck","armhole","hem","shoulder","side"].forEach(k=>[m.seg[k],mir(m.seg[k])].forEach(sg=>{h+=`<polyline class="pc-out ${k==="shoulder"||k==="side"?"sew":""}" points="${pts(sg)}"/>`}));
+    return `<button type="button" class="rasgo" data-i="${i}"><span class="rt">${t}</span><svg viewBox="-46 -6 92 140" aria-hidden="true">${h}</svg><span class="rc">${cap}</span><span class="rgo">Probar ↘</span></button>`;
+  }).join("");
+  $$("#multi .rasgo").forEach(b=>b.addEventListener("click",()=>{
+    P=Object.assign({},BASE,RASGOS[+b.dataset.i][2]);
+    ["largo","prof","holgura","vuelo","sisa","hombro"].forEach(k=>$("#r-"+k).value=P[k]);
+    drawLab(); $("#lab").scrollIntoView({block:"nearest"});
+  }));
+}
+function drawLab(){
+  $$("#s-forma button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===P.forma)));
+  $$("#s-destino button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===P.destino)));
+  $("#v-largo").textContent=`${P.largo} cm · ${largoName(P.largo)}`;
+  $("#v-prof").textContent=`${P.prof} cm`;
+  $("#v-holgura").textContent=`${fmt(P.holgura*2)} pieza`;
+  $("#v-vuelo").textContent=`+${P.vuelo} cm`;
+  $("#v-sisa").textContent=`${P.sisa} cm`;
+  $("#v-hombro").textContent=fmt(P.hombro);
+  let h=""; const res={};
+  [[false,0,"DELANTERO"],[true,130,"ESPALDA"]].forEach(([back,dx,name])=>{
+    const b=piece(BASE,back), m=piece(P,back); res[back?"b":"f"]=m;
+    h+=`<line class="ax" x1="${dx}" y1="-4" x2="${dx}" y2="152" stroke-dasharray="2 3"/>`;
+    h+=`<text class="pc-lbl" x="${dx}" y="-8" text-anchor="middle">${name}</text>`;
+    h+=`<polygon class="pc-base" points="${pts(b.outline,dx)}"/>`;
+    h+=`<polygon class="pc-fill" points="${pts(m.outline,dx)}" style="stroke:none"/>`;
+    ["neck","armhole","hem","shoulder","side"].forEach(k=>{
+      [m.seg[k],mir(m.seg[k])].forEach(s=>{h+=`<polyline class="pc-out ${k==="shoulder"||k==="side"?"sew":""}" points="${pts(s,dx)}"/>`});
+    });
+  });
+  $("#lab-svg").innerHTML=h;
+  const okS = Math.abs(res.f.shoulderLen-res.b.shoulderLen)<.05, okC=Math.abs(res.f.sideLen-res.b.sideLen)<.05;
+  $("#readout").innerHTML=`
+    <div><span>Hombro del. / esp.</span><span>${res.f.shoulderLen.toFixed(1)} / ${res.b.shoulderLen.toFixed(1)} cm</span></div>
+    <div><span>Costado del. / esp.</span><span>${res.f.sideLen.toFixed(1)} / ${res.b.sideLen.toFixed(1)} cm</span></div>
+    <div class="${okS&&okC?"st-ok":"st-bad"}"><span>${okS&&okC?"✓ Las costuras calzan":"✕ El hombro no calza"}</span><span>${okS&&okC?"":"cambia las dos piezas"}</span></div>`;
+}
+
+/* demo dirección de costura */
+function initSew(){
+  let mode="ok";
+  const draw=()=>{
+    $$("#sew-mode button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===mode)));
+    const ys=[25,50,75,100,125]; let h="";
+    h+=`<text class="pc-lbl" style="font-size:9px" x="40" y="12" text-anchor="middle">DELANTERO</text><text class="pc-lbl" style="font-size:9px" x="180" y="12" text-anchor="middle">ESPALDA</text>`;
+    ys.forEach((y,i)=>{const y2= mode==="ok"?y:ys[ys.length-1-i];
+      h+=`<line x1="44" y1="${y}" x2="176" y2="${y2}" stroke="${mode==="ok"?"var(--blue)":"var(--warn)"}" stroke-width="1.2" stroke-dasharray="${mode==="ok"?"0":"3 3"}"/>`});
+    h+=`<line x1="40" y1="20" x2="40" y2="130" stroke="var(--ink)" stroke-width="3"/><line x1="180" y1="20" x2="180" y2="130" stroke="var(--ink)" stroke-width="3"/>`;
+    h+=`<path d="M33 110 l7 14 l7 -14" fill="none" stroke="var(--blue)" stroke-width="2"/>`;
+    h+= mode==="ok" ? `<path d="M173 110 l7 14 l7 -14" fill="none" stroke="var(--blue)" stroke-width="2"/>` : `<path d="M173 40 l7 -14 l7 14" fill="none" stroke="var(--warn)" stroke-width="2"/>`;
+    h+=`<text x="40" y="146" text-anchor="middle" font-size="9" fill="var(--ink-2)" font-family="IBM Plex Mono, monospace">↓ 1</text><text x="180" y="146" text-anchor="middle" font-size="9" fill="var(--ink-2)" font-family="IBM Plex Mono, monospace">${mode==="ok"?"↓ 2":"↑ 2"}</text>`;
+    $("#sew-svg").innerHTML=h;
+    $("#sew-cap").innerHTML = mode==="ok"
+      ? "Los dos segmentos marcados de arriba hacia abajo: las guías quedan paralelas y la costura sale recta."
+      : "Un segmento marcado hacia abajo y el otro hacia arriba: las guías se cruzan y la prenda se retuerce al simular. Deshaz la costura y vuelve a marcarla.";
+  };
+  $$("#sew-mode button").forEach(b=>b.addEventListener("click",()=>{mode=b.dataset.v;draw()}));
+  draw();
+}
+
+/* FAQ */
+$("#faq").innerHTML = FAQ.map(([s,a])=>`<details><summary>${esc(s)}</summary><div>${rich(a)}</div></details>`).join("");
+
+/* ============ nombre de archivo ============ */
+const clean = s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^A-Za-z0-9]+/g,"").replace(/^./,c=>c.toUpperCase());
+function nameOut(){const a=clean($("#nm-ap").value)||"Apellido", n=clean($("#nm-no").value)||"Nombre"; $("#nm-out").textContent=`CLO_C01_${a}_${n}.zprj`}
+["#nm-ap","#nm-no"].forEach(s=>{const el=$(s); el.value=store.get(s,""); el.addEventListener("input",()=>{store.set(s,el.value);nameOut()})});
+nameOut();
+$("#nm-copy").addEventListener("click",()=>{
+  const t=$("#nm-out").textContent, b=$("#nm-copy");
+  const done=()=>{b.textContent="Copiado";setTimeout(()=>b.textContent="Copiar",1600)};
+  const fallback=()=>{const r=document.createRange();r.selectNodeContents($("#nm-out"));const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent="Seleccionado: copia con Ctrl/⌘ + C"};
+  try{navigator.clipboard.writeText(t).then(done,fallback)}catch(e){fallback()}
+});
+
+/* ============ glosario ============ */
+const CATS=["Todas",...new Set(GLOSARIO.map(g=>g.cat))];
+let glCat="Todas";
+$("#gl-cats").innerHTML=CATS.map(c=>`<button type="button" data-c="${c}">${c}</button>`).join("");
+$$("#gl-cats button").forEach(b=>b.addEventListener("click",()=>{glCat=b.dataset.c;renderGlossary()}));
+$("#gl-q").addEventListener("input",renderGlossary);
+const norm = s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+function renderGlossary(){
+  $$("#gl-cats button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.c===glCat)));
+  const q=norm($("#gl-q").value.trim());
+  const list=GLOSARIO.filter(g=>(glCat==="Todas"||g.cat===glCat)&&(!q||norm(g.en+" "+g.es+" "+(g.alt||"")+" "+g.uso).includes(q)));
+  const first = LANG==="es" ? "es" : "en", second = first==="en"?"es":"en";
+  $("#gl").innerHTML = list.length ? list.map(g=>`<div class="term"><div class="cat"><span>${esc(g.cat)}</span><span>C${g.clase}</span></div><div class="en" style="${first==="es"?"color:var(--blue)":""}">${esc(g[first])}</div>${g.en!==g.es?`<div class="es">${esc(g[second])}</div>`:""}${g.alt?`<div class="alt">También: ${esc(g.alt)}</div>`:""}<div class="use">${esc(g.uso)}</div></div>`).join("")
+    : `<p class="empty">No hay comandos que coincidan con “${esc($("#gl-q").value)}”. Prueba con el nombre en el otro idioma.</p>`;
+  $("#gl-count").textContent=GLOSARIO.length;
+}
+
+/* tarjetas */
+let flDir="en", order=[], idx=0, seen=0, hits=0, revealed=false;
+function shuffle(){order=GLOSARIO.map((_,i)=>i).sort(()=>Math.random()-.5);idx=0}
+function showCard(){
+  if(!order.length) shuffle();
+  const g=GLOSARIO[order[idx]]; revealed=false;
+  $("#fl-cat").textContent=`${g.cat} · ${idx+1}/${order.length}`;
+  $("#fl-q").textContent = flDir==="en"?g.en:g.es;
+  $("#fl-a").textContent="?"; $("#fl-u").textContent="";
+  $("#fl-score").textContent=`${hits} aciertos · ${seen} vistas`;
+}
+function reveal(){const g=GLOSARIO[order[idx]]; revealed=true; $("#fl-a").textContent= flDir==="en"?g.es:g.en; $("#fl-u").textContent=g.uso}
+function next(ok){ if(!revealed){reveal();return} seen++; if(ok) hits++; idx=(idx+1)%order.length; if(idx===0) shuffle(); showCard()}
+$("#fl-front").addEventListener("click",reveal);
+$("#fl-yes").addEventListener("click",()=>next(true));
+$("#fl-no").addEventListener("click",()=>next(false));
+$("#fl-reset").addEventListener("click",()=>{seen=hits=0;shuffle();showCard()});
+$$("[data-dir]").forEach(b=>b.addEventListener("click",()=>{flDir=b.dataset.dir;$$("[data-dir]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));showCard()}));
+
+/* ============ prueba de laboratorio ============ */
+const labSaved=store.get("wm-lab",{});
+$("#lab-tbl tbody").innerHTML=LAB_TESTS.map((t,i)=>`<tr><td>${rich(t)}</td><td><input type="checkbox" id="lt-w${i}" aria-label="Funciona en Windows"></td><td><input type="checkbox" id="lt-m${i}" aria-label="Funciona en macOS"></td><td><input type="text" id="lt-n${i}" placeholder="Atajo distinto…" aria-label="Notas"></td></tr>`).join("");
+$$("#lab-tbl input").forEach(el=>{
+  const k=el.id; if(k in labSaved){ if(el.type==="checkbox") el.checked=labSaved[k]; else el.value=labSaved[k]; }
+  el.addEventListener(el.type==="checkbox"?"change":"input",()=>{labSaved[k]=el.type==="checkbox"?el.checked:el.value;store.set("wm-lab",labSaved)});
+});
+
+/* ============ router ============ */
+let pendingAnchor=null;
+function route(){
+  let v=(location.hash||"#inicio").slice(1);
+  if(!$(`[data-view="${v}"]`)){ const el=document.getElementById(v); if(el){const host=el.closest("[data-view]"); if(host){pendingAnchor=v; v=host.dataset.view;}} else v="inicio"; }
+  $$("[data-view]").forEach(s=>s.hidden = s.dataset.view!==v);
+  $$(".nav a").forEach(a=>{const h=a.getAttribute("href").slice(1); a.setAttribute("aria-current", (h===v || (a.dataset.match && v.startsWith(a.dataset.match)))?"page":"false")});
+  $$(".tabs a").forEach(a=>a.setAttribute("aria-current",a.getAttribute("href").slice(1)===v?"page":"false"));
+  if(pendingStep!==null && v==="clase01-practica"){ const t=$("#paso-"+(pendingStep+1)); pendingStep=null; requestAnimationFrame(()=>t&&t.scrollIntoView({block:"start"})); }
+  else if(pendingAnchor){ const t=document.getElementById(pendingAnchor); pendingAnchor=null; requestAnimationFrame(()=>t&&t.scrollIntoView({block:"start"})); }
+  else window.scrollTo(0,0);
+}
+/* índice lateral: enlaces internos sin cambiar la ruta */
+$$(".toc a").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();document.getElementById(a.getAttribute("href").slice(1)).scrollIntoView({block:"start"})}));
+const io = "IntersectionObserver" in window ? new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){$$(".toc a").forEach(a=>a.classList.toggle("on",a.getAttribute("href")==="#"+en.target.id))}})},{rootMargin:"-30% 0px -60% 0px"}) : null;
+if(io) $$("[data-view='clase01'] .block").forEach(b=>io.observe(b));
+window.addEventListener("hashchange",route);
+
+/* ============ arranque ============ */
+drawAnatomy(); renderSteps(); initChecks(); renderGlossary(); shuffle(); showCard();
+paintCmds(); paintOS(); route();
+})();
+</script>
+</body>
+</html>
