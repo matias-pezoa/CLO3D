@@ -295,6 +295,9 @@ select,input[type=text]{font:inherit;border:1px solid var(--ink);background:var(
 .final{background:var(--black-tile);color:var(--on-black);padding:clamp(16px,2.6vw,32px);display:grid;grid-template-columns:auto minmax(0,1fr);gap:1.5rem;align-items:center}
 .final .big{font-size:clamp(2.5rem,6vw,5rem)}
 .final p{font-size:clamp(1.05rem,1.8vw,1.35rem);line-height:1.3}
+.step .shot-img img{width:auto;max-height:min(80vh,56rem);margin-inline:auto}
+.wbar{display:block;height:6px;background:var(--rule);min-width:6rem}
+.wbar i{display:block;height:100%;width:calc(var(--w) * 1%);background:var(--blue)}
 
 /* sewing demo */
 .sew-demo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1rem;align-items:center}
@@ -429,8 +432,8 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;
       <div class="big">CLO 3D</div>
       <div class="big">2026</div>
       <div class="row">
-        <div class="small">Fabricación digital<br>Patrón + costura + simulación<br>Entorno 2D ↘ 3D<br>Clase 01 ↘ primer vestido</div>
-        <a class="arrow-link" href="#clase01" aria-label="Ir a la clase 01" style="margin-left:auto">↘</a>
+        <div class="small">Fabricación digital<br>Patrón + costura + simulación<br>Entorno 2D ↘ 3D<br>Clase 02 ↘ top y chaqueta</div>
+        <a class="arrow-link" href="#clase02" aria-label="Ir a la clase 02" style="margin-left:auto">↘</a>
       </div>
     </div>
     <div class="tile t-black">
@@ -456,14 +459,14 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;
   </div>
 
   <section>
-    <div class="sec-h"><h2>Clases</h2><span class="label">1 publicada</span></div>
+    <div class="sec-h"><h2>Clases</h2><span class="label" id="cl-pub">2 publicadas</span></div>
     <ul class="rows class-rows"></ul>
   </section>
 
   <section>
     <div class="sec-h" style="margin-bottom:clamp(10px,1.6vw,20px)"><h2>Recursos</h2><span class="label">Se actualizan cada clase</span></div>
     <div class="res-grid">
-      <a class="res t-black" href="#glosario"><span class="label">03 · Glosario</span><h3>Comandos en inglés y español</h3><div class="foot"><span class="mono">24 entradas</span><span>↘</span></div></a>
+      <a class="res t-black" href="#glosario"><span class="label">03 · Glosario</span><h3>Comandos en inglés y español</h3><div class="foot"><span class="mono"><span class="gl-n">44</span> entradas</span><span>↘</span></div></a>
       <a class="res t-white" href="#winmac"><span class="label">04 · Referencia rápida</span><h3>Windows y macOS</h3><div class="foot"><span class="mono">Teclado · mouse</span><span>↘</span></div></a>
       <a class="res t-blue" href="#recursos"><span class="label">Enlaces</span><h3>Manual oficial de CLO</h3><div class="foot"><span class="mono">support.clo3d.com</span><span>↘</span></div></a>
     </div>
@@ -739,19 +742,296 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;
   </section>
 </section>
 
+<!-- ================= CLASE 02 · CONTENIDOS ================= -->
+<section class="view" data-view="clase02" hidden>
+  <a class="back" href="#clases">↖ Todas las clases</a>
+  <div class="doc-head">
+    <div class="doc-title">
+      <span class="label">Clase 02 · 2026 ↘</span>
+      <h1 class="big">Construcción desde el cuerpo y desde la imagen</h1>
+      <p class="lead">Dos ejercicios independientes: un top trazado sobre el avatar y una chaqueta de varias piezas a partir de una referencia gráfica.</p>
+    </div>
+    <div class="facts">
+      <dl>
+        <div><dt>E01</dt><dd>Top desde el avatar</dd></div>
+        <div><dt>E02</dt><dd>Chaqueta desde una imagen</dd></div>
+        <div><dt>Entrega</dt><dd>Dos <span class="mono">.zprj</span> + registros</dd></div>
+        <div><dt>Dónde</dt><dd>Canvas</dd></div>
+        <div><dt>Autoría</dt><dd>Matías Pezoa</dd></div>
+      </dl>
+    </div>
+  </div>
+  <nav class="tabs" aria-label="Documentos de la clase 02">
+    <a href="#clase02"><span class="mono">01</span>Guía de contenidos</a>
+    <a href="#clase02-e01"><span class="mono">02</span>E01 · Top · 12 pasos</a>
+    <a href="#clase02-e02"><span class="mono">03</span>E02 · Chaqueta · 11 pasos</a>
+  </nav>
+
+  <div class="doc">
+    <nav class="toc" aria-label="Índice">
+      <a href="#c2-objetivo"><span class="mono">01</span>Objetivo</a>
+      <a href="#c2-antes"><span class="mono">02</span>Antes de empezar</a>
+      <a href="#c2-herramientas"><span class="mono">03</span>Herramientas nuevas</a>
+      <a href="#c2-nm"><span class="mono">04</span>N:M no es frunce</a>
+      <a href="#c2-errores"><span class="mono">05</span>Resolver errores</a>
+      <a href="#c2-bonus"><span class="mono">06</span>Bonus</a>
+      <a href="#c2-entrega"><span class="mono">07</span>Entrega</a>
+      <a href="#c2-criterios"><span class="mono">08</span>Criterios de revisión</a>
+      <a href="#c2-auto"><span class="mono">09</span>Autoevaluación</a>
+    </nav>
+    <div class="doc-body">
+      <section class="block" id="c2-objetivo">
+        <header><span class="num">01</span><h2>Objetivo</h2></header>
+        <p class="statement">Aplicar dos estrategias de desarrollo de patrones en CLO: trazar sobre el cuerpo con <span class="cmd" data-en="3D Pen" data-es="Lápiz 3D"></span> e interpretar patrones desde una imagen de referencia.</p>
+        <div class="res-grid">
+          <a class="res t-blue" href="#clase02-e01"><span class="label">E01 · 12 pasos</span><h3>Del avatar al top</h3><p>Configura un avatar, traza una base superior en 3D, obtén piezas editables, cóselas y simula un top.</p><div class="foot"><span class="mono">C02_E01_Apellido.zprj</span><span>↘</span></div></a>
+          <a class="res t-black" href="#clase02-e02"><span class="label">E02 · 11 pasos</span><h3>Chaqueta desde una imagen</h3><p>Importa una referencia, construye los patrones, agrega mangas y bolsillo, practica la costura N:M y plisa la espalda.</p><div class="foot"><span class="mono">C02_E02_Apellido.zprj</span><span>↘</span></div></a>
+        </div>
+      </section>
+
+      <section class="block" id="c2-antes">
+        <header><span class="num">02</span><h2>Antes de empezar</h2></header>
+        <ul class="check" data-store="c02-antes">
+          <li><label><input type="checkbox"><span>Abre un proyecto nuevo y guarda una copia con el nombre de la entrega, por ejemplo <span class="mono">C02_E01_Apellido.zprj</span>.</span></label></li>
+          <li><label><input type="checkbox"><span>Deja visibles la <span class="cmd" data-en="3D Window" data-es="Ventana 3D"></span> y la <span class="cmd" data-en="2D Pattern Window" data-es="Ventana de Patrón 2D"></span> cuando corresponda.</span></label></li>
+          <li><label><input type="checkbox"><span>Trabaja sobre el avatar seleccionado y comprueba cuál es su lado frontal y cuál el posterior.</span></label></li>
+          <li><label><input type="checkbox"><span>Los nombres de los comandos cambian según el idioma y la versión: compruébalos en tu CLO 2026.</span></label></li>
+        </ul>
+      </section>
+
+      <section class="block" id="c2-herramientas">
+        <header><span class="num">03</span><h2>Herramientas nuevas</h2></header>
+        <div class="ops">
+          <div class="op"><span class="n">A · cuerpo</span><h3>Ajustar el avatar</h3><p>Cambia las medidas del cuerpo digital, de una en una.</p><div class="cmds"><span class="cmd" data-en="Avatar Editor" data-es="Editor de avatar"></span></div></div>
+          <div class="op"><span class="n">B · trazado 3D</span><h3>Dibujar sobre el cuerpo</h3><p>Traza líneas siguiendo el volumen del avatar.</p><div class="cmds"><span class="cmd" data-en="3D Pen" data-es="Lápiz 3D"></span></div></div>
+          <div class="op"><span class="n">C · posición</span><h3>Ubicar piezas</h3><p>Coloca cada patrón alrededor del avatar.</p><div class="cmds"><span class="cmd" data-en="Arrangement Points" data-es="Puntos de disposición"></span></div></div>
+          <div class="op"><span class="n">D · unión</span><h3>Coser grupos</h3><p>Une grupos de segmentos con subdivisiones distintas.</p><div class="cmds"><span class="cmd" data-en="N:M Sewing" data-es="Costura N:M"></span><span class="cmd" data-en="Free Sewing" data-es="Costura libre"></span></div></div>
+          <div class="op"><span class="n">E · volumen</span><h3>Plisar</h3><p>Define líneas, dirección y costura de los pliegues.</p><div class="cmds"><span class="cmd" data-en="Internal Line" data-es="Línea interna"></span><span class="cmd" data-en="Pleats Fold" data-es="Doblez de pliegues"></span></div></div>
+        </div>
+        <p class="note">Todos los términos nuevos están en el <a href="#glosario">glosario</a>, marcados como C02.</p>
+      </section>
+
+      <section class="block" id="c2-nm">
+        <header><span class="num">04</span><h2>N:M no es frunce</h2></header>
+        <p class="statement">La costura N:M une grupos de segmentos con subdivisiones distintas. Una unión N:M puede quedar perfectamente lisa.</p>
+        <p>Para que haya frunce hace falta, además, una diferencia de largo entre los dos lados y que esa diferencia se reparta a lo largo de la costura. Antes de coser, compara las longitudes de los grupos que vas a unir.</p>
+      </section>
+
+      <section class="block" id="c2-errores">
+        <header><span class="num">05</span><h2>Resolver errores</h2></header>
+        <p>Antes de reiniciar el proyecto, revisa esta tabla. Casi todo se corrige sin empezar de cero.</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Situación</th><th>Qué comprobar</th><th>Qué hacer</th></tr></thead>
+            <tbody>
+              <tr><td>El patrón no se genera</td><td>Que el trazado esté cerrado, el comando y la superficie</td><td>Corrige las líneas y repite la conversión</td></tr>
+              <tr><td>Costura invertida</td><td>Sentido y lados de la costura</td><td>Edita la costura y vuelve a simular</td></tr>
+              <tr><td>Manga torcida</td><td>Ubicación, orientación y correspondencia</td><td>Reposiciona y revisa segmentos y costuras</td></tr>
+              <tr><td>Bolsillo cerrado</td><td>Si la boca superior quedó incluida en la costura</td><td>Elimina la unión de la abertura</td></tr>
+              <tr><td>N:M irregular</td><td>Orden de selección y longitudes</td><td>Revisa los grupos de segmentos y su proporción</td></tr>
+              <tr><td>Los pliegues no se forman</td><td>Amplitud, dobleces y configuración</td><td>Revisa cuánto material hay y la dirección del doblez</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="block" id="c2-bonus">
+        <header><span class="num">06</span><h2>Bonus</h2></header>
+        <p>Demostración en clase. No se evalúa.</p>
+        <ul class="mini-steps">
+          <li><b>1</b><span><span class="cmd" data-en="Zipper" data-es="Cremallera"></span> · apertura y cierre</span></li>
+          <li><b>2</b><span><span class="cmd" data-en="Button / Buttonhole" data-es="Botón / ojal"></span> · cierre funcional y su representación</span></li>
+          <li><b>3</b><span><span class="cmd" data-en="Trim" data-es="Fornitura"></span> · broches y otros componentes</span></li>
+          <li><b>4</b><span><span class="cmd" data-en="Graphic" data-es="Gráfico"></span> · gráfica aplicada, sobre todo para presentar</span></li>
+          <li><b>5</b><span><span class="cmd" data-en="Topstitch" data-es="Pespunte"></span> · pespuntes y acabado visible</span></li>
+        </ul>
+      </section>
+
+      <section class="block" id="c2-entrega">
+        <header><span class="num">07</span><h2>Entrega</h2></header>
+        <p>Sube a Canvas los dos proyectos y sus registros.</p>
+        <div class="deliver">
+          <div><span class="k">E01 · Top</span><span><span class="mono">C02_E01_Apellido.zprj</span> + capturas del trazado 3D, los patrones 2D y la simulación.</span></div>
+          <div><span class="k">E02 · Chaqueta</span><span><span class="mono">C02_E02_Apellido.zprj</span> + capturas de los patrones 2D ordenados, frente y espalda en 3D y el detalle de los pliegues.</span></div>
+          <div><span class="k">Nota</span><span>Para E02, una nota breve con los comandos nuevos que usaste.</span></div>
+        </div>
+        <div class="namer">
+          <span class="label">Arma el nombre de tus archivos ↘</span>
+          <div class="fields">
+            <label for="nm2-ap">Apellido<input id="nm2-ap" type="text" autocomplete="off" placeholder="Apellido"></label>
+          </div>
+          <div class="out"><code id="nm2-e01">C02_E01_Apellido.zprj</code><button type="button" data-copy="#nm2-e01">Copiar</button></div>
+          <div class="out"><code id="nm2-e02">C02_E02_Apellido.zprj</code><button type="button" data-copy="#nm2-e02">Copiar</button></div>
+        </div>
+      </section>
+
+      <section class="block" id="c2-criterios">
+        <header><span class="num">08</span><h2>Criterios de revisión</h2></header>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Criterio</th><th>Peso orientativo</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>Construcción y organización de patrones</td><td class="mono">30%</td><td><span class="wbar" style="--w:100"><i></i></span></td></tr>
+              <tr><td>Correspondencia y resolución de costuras</td><td class="mono">25%</td><td><span class="wbar" style="--w:83.3"><i></i></span></td></tr>
+              <tr><td>Uso de las herramientas nuevas</td><td class="mono">25%</td><td><span class="wbar" style="--w:83.3"><i></i></span></td></tr>
+              <tr><td>Simulación, registro y orden de archivos</td><td class="mono">20%</td><td><span class="wbar" style="--w:66.7"><i></i></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">La chaqueta puede terminarse después de la sesión. Los gráficos y las fornituras decorativas no son obligatorios.</p>
+      </section>
+
+      <section class="block" id="c2-auto">
+        <header><span class="num">09</span><h2>Autoevaluación</h2></header>
+        <div class="meter" data-meter="c02-auto"><span class="txt">0/4</span><span class="bar"></span></div>
+        <ul class="check" data-store="c02-auto">
+          <li><label><input type="checkbox"><span>Distingo las piezas de patrón de las líneas auxiliares.</span></label></li>
+          <li><label><input type="checkbox"><span>Puedo corregir una costura sin reiniciar el proyecto.</span></label></li>
+          <li><label><input type="checkbox"><span>Reconozco cuándo un volumen necesita amplitud real en el patrón 2D.</span></label></li>
+          <li><label><input type="checkbox"><span>Puedo explicar la diferencia entre N:M y frunce.</span></label></li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CLASE 02 · E01 TOP ================= -->
+<section class="view" data-view="clase02-e01" hidden>
+  <a class="back" href="#clases">↖ Todas las clases</a>
+  <div class="doc-head">
+    <div class="doc-title">
+      <span class="label">Clase 02 · E01 · 12 pasos ↘</span>
+      <h1 class="big">Del avatar al top</h1>
+      <p class="lead">Edita el avatar, traza sobre el cuerpo en 3D y convierte el trazado en patrones que puedes coser y simular.</p>
+    </div>
+    <div class="facts">
+      <dl>
+        <div><dt>Producto</dt><dd>Top, sin tipología ni estética fija</dd></div>
+        <div><dt>Piezas</dt><dd>Delantero y espalda</dd></div>
+        <div><dt>Costuras</dt><dd>Hombros y costados</dd></div>
+        <div><dt>Archivo</dt><dd><span class="mono">C02_E01_Apellido.zprj</span></dd></div>
+        <div><dt>Autoría</dt><dd>Matías Pezoa</dd></div>
+      </dl>
+    </div>
+  </div>
+  <nav class="tabs" aria-label="Documentos de la clase 02">
+    <a href="#clase02"><span class="mono">01</span>Guía de contenidos</a>
+    <a href="#clase02-e01"><span class="mono">02</span>E01 · Top · 12 pasos</a>
+    <a href="#clase02-e02"><span class="mono">03</span>E02 · Chaqueta · 11 pasos</a>
+  </nav>
+
+  <div class="final">
+    <span class="big">→</span>
+    <p>Producto final: una base superior trazada sobre el avatar, convertida en piezas 2D editables, cosida y simulada como top.</p>
+  </div>
+
+  <div>
+    <div class="progress"><div class="meter" id="meter-e01"><span class="txt">0/12 pasos</span><span class="bar"></span></div></div>
+    <div class="steps" id="steps-e01"></div>
+  </div>
+
+  <section class="block">
+    <header><span class="num">↘</span><h2>Comprobación final</h2></header>
+    <div class="meter" data-meter="c02-e01-fin"><span class="txt">0/4</span><span class="bar"></span></div>
+    <ul class="check" data-store="c02-e01-fin">
+      <li><label><input type="checkbox"><span>El trazado se convirtió en piezas 2D editables.</span></label></li>
+      <li><label><input type="checkbox"><span>El top tiene delantero y espalda, y las uniones son coherentes.</span></label></li>
+      <li><label><input type="checkbox"><span>La simulación corre sin errores graves.</span></label></li>
+      <li><label><input type="checkbox"><span>Guardé el <span class="mono">.zprj</span> y una captura con las vistas 2D y 3D.</span></label></li>
+    </ul>
+  </section>
+
+  <section class="block">
+    <header><span class="num">+</span><h2>Si terminas antes</h2></header>
+    <p>Una base de torso como esta se puede reutilizar para otras prendas, por ejemplo una chaqueta. Esa transformación no es parte del ejercicio obligatorio.</p>
+  </section>
+</section>
+
+<!-- ================= CLASE 02 · E02 CHAQUETA ================= -->
+<section class="view" data-view="clase02-e02" hidden>
+  <a class="back" href="#clases">↖ Todas las clases</a>
+  <div class="doc-head">
+    <div class="doc-title">
+      <span class="label">Clase 02 · E02 · 11 pasos ↘</span>
+      <h1 class="big">Chaqueta desde una imagen</h1>
+      <p class="lead">Lee una referencia gráfica como un sistema de patrones y construye una chaqueta digital de varias piezas.</p>
+    </div>
+    <div class="facts">
+      <dl>
+        <div><dt>Piezas</dt><dd>Delantero, espalda, mangas, bolsillo</dd></div>
+        <div><dt>Nuevo</dt><dd>Costura N:M y pliegues en la espalda</dd></div>
+        <div><dt>Archivo</dt><dd><span class="mono">C02_E02_Apellido.zprj</span></dd></div>
+        <div><dt>Autoría</dt><dd>Matías Pezoa</dd></div>
+      </dl>
+    </div>
+  </div>
+  <nav class="tabs" aria-label="Documentos de la clase 02">
+    <a href="#clase02"><span class="mono">01</span>Guía de contenidos</a>
+    <a href="#clase02-e01"><span class="mono">02</span>E01 · Top · 12 pasos</a>
+    <a href="#clase02-e02"><span class="mono">03</span>E02 · Chaqueta · 11 pasos</a>
+  </nav>
+
+  <div class="final">
+    <span class="big">→</span>
+    <p>Producto final: una chaqueta digital con delantero, espalda, mangas, bolsillo aplicado y pliegues en la espalda.</p>
+  </div>
+
+  <p class="callout dark">Sobre la referencia: la imagen de patronaje que comparte el docente, atribuida a <i>Cómo cubrir un cuerpo</i>, se usa solo como material de estudio. No se copian ni se suponen sus medidas reales. El calce se comprueba simulando.</p>
+
+  <div>
+    <div class="progress"><div class="meter" id="meter-e02"><span class="txt">0/11 pasos</span><span class="bar"></span></div></div>
+    <div class="steps" id="steps-e02"></div>
+  </div>
+
+  <section class="block">
+    <header><span class="num">↘</span><h2>Mangas</h2></header>
+    <p>Procedimiento complementario. Todavía no hay capturas de esta fase: sigue la demostración en clase.</p>
+    <ul class="mini-steps">
+      <li><b>1</b><span>Identifica la <span class="cmd" data-en="Armhole" data-es="Sisa"></span> y la <span class="cmd" data-en="Sleeve Cap" data-es="Copa de manga"></span>. Compara sus largos antes de coser.</span></li>
+      <li><b>2</b><span>Posiciona las dos mangas en 3D. Comprueba derecho y revés, y que queden simétricas.</span></li>
+      <li><b>3</b><span>Une los segmentos que se corresponden, simula y revisa que no haya torsiones.</span></li>
+    </ul>
+  </section>
+
+  <section class="block">
+    <header><span class="num">↘</span><h2>Plisado: secuencia de control</h2></header>
+    <div class="meter" data-meter="c02-plisado"><span class="txt">0/6</span><span class="bar"></span></div>
+    <ul class="check" data-store="c02-plisado">
+      <li><label><input type="checkbox"><span>Guardé una copia de la espalda original.</span></label></li>
+      <li><label><input type="checkbox"><span>Tracé las líneas que delimitan la zona a intervenir.</span></label></li>
+      <li><label><input type="checkbox"><span>Agregué amplitud suficiente en el patrón.</span></label></li>
+      <li><label><input type="checkbox"><span>Definí las líneas y la dirección de cada pliegue.</span></label></li>
+      <li><label><input type="checkbox"><span>Cosí y simulé la espalda antes de ensamblar el resto.</span></label></li>
+      <li><label><input type="checkbox"><span>Comparé el patrón original, el patrón ampliado y el resultado en 3D.</span></label></li>
+    </ul>
+  </section>
+
+  <section class="block">
+    <header><span class="num">↘</span><h2>Entregables</h2></header>
+    <div class="meter" data-meter="c02-e02-fin"><span class="txt">0/4</span><span class="bar"></span></div>
+    <ul class="check" data-store="c02-e02-fin">
+      <li><label><input type="checkbox"><span>El <span class="mono">.zprj</span> editable de la chaqueta.</span></label></li>
+      <li><label><input type="checkbox"><span>Una captura de los patrones 2D ordenados.</span></label></li>
+      <li><label><input type="checkbox"><span>Capturas frontal y posterior en 3D donde se vean los pliegues.</span></label></li>
+      <li><label><input type="checkbox"><span>Una nota breve con los comandos nuevos que usaste.</span></label></li>
+    </ul>
+    <p class="note">¿Algo no funciona? Revisa <a href="#c2-errores">Resolver errores</a> en la guía de contenidos.</p>
+  </section>
+</section>
+
 <!-- ================= GLOSARIO ================= -->
 <section class="view" data-view="glosario" hidden>
   <div class="doc-head">
     <div class="doc-title" style="background:var(--black-tile);color:var(--on-black)">
-      <span class="label">03 · Glosario · versión 1.1 ↘</span>
+      <span class="label">03 · Glosario · versión 1.2 ↘</span>
       <h1 class="big">Glosario de comandos</h1>
       <p class="lead">Cada comando con su nombre en inglés y en español, para que lo encuentres en cualquier versión de la interfaz.</p>
     </div>
     <div class="facts">
       <dl>
-        <div><dt>Entradas</dt><dd id="gl-count">24</dd></div>
+        <div><dt>Entradas</dt><dd id="gl-count">44</dd></div>
         <div><dt>Se actualiza</dt><dd>Cada clase</dd></div>
-        <div><dt>Última</dt><dd>Clase 01</dd></div>
+        <div><dt>Última</dt><dd>Clase 02</dd></div>
         <div><dt>Autoría</dt><dd>Matías Pezoa</dd></div>
       </dl>
     </div>
@@ -908,7 +1188,8 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;
   <section class="block">
     <header><span class="num">02</span><h2>En esta web</h2></header>
     <ul class="links">
-      <li><a href="#glosario"><div><div class="t">Glosario de comandos</div><div class="d">24 entradas en inglés y español, con buscador y prueba.</div></div><span>↘</span></a></li>
+      <li><a href="#glosario"><div><div class="t">Glosario de comandos</div><div class="d"><span class="gl-n">44</span> entradas en inglés y español, con buscador y prueba.</div></div><span>↘</span></a></li>
+      <li><a href="#c2-errores"><div><div class="t">Resolver errores</div><div class="d">Patrones que no se generan, costuras invertidas, N:M, bolsillos y pliegues (clase 02).</div></div><span>↘</span></a></li>
       <li><a href="#winmac"><div><div class="t">Windows y macOS</div><div class="d">Atajos, mouse, configuración y prueba del laboratorio.</div></div><span>↘</span></a></li>
       <li><a href="#clase01-practica"><div><div class="t">Laboratorio de rasgos</div><div class="d">Prueba largo, escote, holgura, vuelo, sisa y hombro antes de hacerlo en CLO.</div></div><span>↘</span></a></li>
     </ul>
@@ -928,7 +1209,37 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;
 /* ============ DATOS DEL CURSO (agregar clases aquí) ============ */
 const CLASES = [
   {n:"01", titulo:"Interfaz, navegación y primer vestido", meta:"Entrega: vestido con un rasgo propio · .zprj + captura", href:"#clase01"},
-  {n:"02", titulo:"Próxima clase", meta:"Se publica después de la clase 01", href:null}
+  {n:"02", titulo:"Construcción desde el cuerpo y desde la imagen", meta:"Entrega: top (E01) y chaqueta (E02) · dos .zprj + registros", href:"#clase02"},
+  {n:"03", titulo:"Próxima clase", meta:"Se publica después de la clase 02", href:null}
+];
+
+/* clase 02: pasos con captura (img/ · ancho × alto) */
+const PASOS_E01 = [
+  {t:"Reconocer el entorno", c:[["3D Window","Ventana 3D"],["2D Pattern Window","Ventana de Patrón 2D"]], b:"Ubica la {3D Window|Ventana 3D}, la {2D Pattern Window|Ventana de Patrón 2D}, el {Object Browser|Navegador de objetos} y el {Property Editor|Editor de propiedades}.", img:"c02_e01_interfaz.jpg", w:1685, h:916, alt:"Interfaz de CLO con la Ventana 3D, la Ventana de Patrón 2D, el Navegador y el Editor de propiedades"},
+  {t:"Configurar el avatar", c:[["Avatar Editor","Editor de avatar"]], b:"Abre el {Avatar Editor|Editor de avatar} y revisa los parámetros del cuerpo. No cambies varios valores a la vez.", img:"c02_e01_avatar_editor.jpg", w:1685, h:918, alt:"Editor de avatar abierto junto al avatar, con las medidas de contorno, altura y longitud"},
+  {t:"Observar las medidas", c:[], b:"Anota la medida que elegiste y observa cómo cambia el cuerpo.", img:"c02_e01_medidas.jpg", w:1685, h:916, alt:"Detalle de las medidas del avatar en el Editor de avatar"},
+  {t:"Comparar el avatar", c:[], b:"Registra el antes y el después. El patrón de la espalda tendrá que comprobarse sobre este cuerpo.", img:"c02_e01_antes_despues.jpg", w:1685, h:917, alt:"Avatar antes y después de modificar sus medidas"},
+  {t:"Activar el lápiz 3D", c:[["3D Pen","Lápiz 3D"]], b:"Busca el {3D Pen|Lápiz 3D} en las herramientas 3D y comprueba sobre qué superficie permite dibujar.", img:"c02_e01_3d_pen.jpg", w:1114, h:1304, alt:"Ubicación del Lápiz 3D en la barra de herramientas de la Ventana 3D"},
+  {t:"Comenzar el trazado", c:[["3D Pen","Lápiz 3D"]], b:"Dibuja las primeras líneas siguiendo el volumen del cuerpo. Evita cruces y extremos sueltos.", img:"c02_e01_inicio_trazado.jpg", w:1116, h:1362, alt:"Primeras líneas trazadas con el Lápiz 3D sobre el torso del avatar"},
+  {t:"Delimitar el delantero", c:[["3D Pen","Lápiz 3D"]], b:"Define escote, hombro, sisa, costado y bajo, con líneas continuas.", img:"c02_e01_delantero.jpg", w:1114, h:1360, alt:"Contorno del delantero trazado sobre el avatar"},
+  {t:"Delimitar la espalda", c:[["3D Pen","Lápiz 3D"],["Back View","Vista posterior"]], b:"Repite el procedimiento en la {Back View|Vista posterior}. Revisa que hombros y costados coincidan con el delantero.", img:"c02_e01_espalda.jpg", w:1118, h:1392, alt:"Contorno de la espalda trazado sobre el avatar, visto desde atrás"},
+  {t:"Obtener patrones", c:[], b:"Sigue el procedimiento que muestra el docente para convertir el trazado en piezas de patrón. Comprueba que se puedan editar en 2D. Este paso puede variar según tu versión de CLO.", img:"c02_e01_crear_patrones.jpg", w:1114, h:1358, alt:"Pieza de patrón generada desde el trazado, en amarillo semitransparente sobre el avatar"},
+  {t:"Revisar las piezas 2D", c:[["Edit Pattern","Editar patrón"]], b:"Ordena el delantero y la espalda en la {2D Pattern Window|Ventana de Patrón 2D}. Revisa contornos, puntos y segmentos con {Edit Pattern|Editar patrón}.", img:"c02_e01_patrones_2d.jpg", w:1685, h:916, alt:"Patrones 2D del delantero y la espalda generados desde el trazado"},
+  {t:"Coser", c:[["Segment Sewing","Costura de segmentos"]], b:"Une hombros y costados. Comprueba la dirección de cada costura y la orientación de los patrones.", img:"c02_e01_costura.jpg", w:1685, h:918, alt:"Costuras de hombros y costados entre el delantero y la espalda del top"},
+  {t:"Simular", c:[["Simulate","Simular"]], b:"Activa {Simulate|Simular} y corrige lo que falle: calce, forma de las piezas o costuras.", img:"c02_e01_simulado.jpg", w:1116, h:1392, alt:"Top simulado sobre el avatar"}
+];
+const PASOS_E02 = [
+  {t:"Importar la imagen", c:[], b:"Carga la referencia como fondo de la {2D Pattern Window|Ventana de Patrón 2D}. En el cuadro Establecer Fondo 2D ajusta escala, rotación y opacidad, y fíjala para que no se mueva mientras dibujas.", img:"c02_e02_importacion.jpg", w:1002, h:1294, alt:"Cuadro Establecer Fondo 2D con escala, rotación y opacidad, y la imagen de referencia junto a la silueta del avatar"},
+  {t:"Trazar el delantero", c:[["Polygon","Polígono"]], b:"Dibuja el contorno del delantero con las herramientas de patrón. Interpreta las líneas de la imagen; no copies sus medidas.", img:"c02_e02_delantero.jpg", w:998, h:1310, alt:"Delantero de la chaqueta trazado sobre la imagen de referencia"},
+  {t:"Trazar la espalda", c:[["Polygon","Polígono"],["Internal Line","Línea interna"]], b:"Construye la espalda. Distingue los cortes de diseño, los bordes y las líneas auxiliares.", img:"c02_e02_espalda.jpg", w:994, h:1292, alt:"Espalda de la chaqueta trazada sobre la imagen de referencia"},
+  {t:"Organizar el despiece", c:[], b:"Separa y nombra los patrones. Identifica delanteros, espalda, mangas, bolsillos y piezas auxiliares.", img:"c02_e02_despiece.jpg", w:1008, h:1292, alt:"Patrones de la chaqueta separados y ordenados en la Ventana de Patrón 2D"},
+  {t:"Posicionar las piezas", c:[["Arrangement Points","Puntos de disposición"]], b:"En la {3D Window|Ventana 3D}, usa los {Arrangement Points|Puntos de disposición} para ubicar cada pieza alrededor del avatar.", img:"c02_e02_posicion_3d.jpg", w:1012, h:1294, alt:"Piezas de la chaqueta posicionadas alrededor del avatar en la Ventana 3D"},
+  {t:"Bolsillo aplicado", c:[["Segment Sewing","Costura de segmentos"]], b:"Haz el bolsillo como un patrón independiente. Cose los costados y el fondo y deja libre la abertura.", img:"c02_e02_bolsillo.jpg", w:822, h:1106, alt:"Bolsillo aplicado cosido por los costados y el fondo, con la abertura libre"},
+  {t:"Costura N:M", c:[["N:M Sewing","Costura N:M"]], b:"Selecciona los grupos de segmentos que vas a unir. N:M no frunce por sí sola: revisa las longitudes y cómo se reparten.", img:"c02_e02_costura_nm.jpg", w:1446, h:1388, alt:"Costura Segmento M:N seleccionada en la barra 2D, con dos grupos de segmentos unidos y sus longitudes"},
+  {t:"Espalda original", c:[], b:"Guarda una copia antes de transformar. Reconoce la zona que va a llevar los pliegues.", img:"c02_e02_espalda_original.jpg", w:614, h:1040, alt:"Patrón de la espalda antes de intervenir"},
+  {t:"Líneas de transformación", c:[["Internal Line","Línea interna"]], b:"Define las líneas internas y la profundidad prevista. Al ampliar el patrón tiene que aparecer material real para plegar.", img:"c02_e02_lineas_transformacion.jpg", w:650, h:1114, alt:"Espalda con las líneas internas que delimitan la zona a plisar"},
+  {t:"Configurar los pliegues", c:[["Pleats Fold","Doblez de pliegues"]], b:"En el cuadro Plisados elige el tipo, el número de pliegues, la profundidad y el intervalo. Comprueba la dirección del doblez y anota los valores que usaste.", img:"c02_e02_config_pliegues.jpg", w:1685, h:912, alt:"Cuadro Plisados con tipo, número de pliegues, profundidad e intervalo, y las líneas de pliegue sobre la espalda en 2D"},
+  {t:"Simular la espalda", c:[["Simulate","Simular"]], b:"Revisa en 3D la caída y el reparto de los pliegues. Corrige antes de cerrar el proyecto.", img:"c02_e02_espalda_plegada.jpg", w:1685, h:920, alt:"Espalda de la chaqueta simulada con los pliegues formados"}
 ];
 
 const PASOS = [
@@ -977,9 +1288,30 @@ const GLOSARIO = [
   ["Archivo","Save As","Guardar como","Crear un archivo nuevo"],
   ["Archivo","Project (.zprj)","Proyecto (.zprj)","Archivo editable de CLO"],
   ["Archivo","Undo / Redo","Deshacer / Rehacer","Revertir o repetir"]
-].map(([cat,en,es,uso])=>({cat,en,es,uso,clase:"01"}));
+].map(([cat,en,es,uso])=>({cat,en,es,uso,clase:"01"})).concat([
+  ["Avatar","Avatar Editor","Editor de avatar","Cambiar las medidas del cuerpo"],
+  ["Patrones","3D Pen","Lápiz 3D","Dibujar sobre el avatar en 3D"],
+  ["Patrones","Internal Line","Línea interna","Líneas auxiliares o de construcción"],
+  ["Patrones","Cut / Cut & Sew","Cortar / Cortar y coser","Dividir un patrón y, si corresponde, unirlo"],
+  ["Patrones","Notch","Piquete","Marcar qué puntos se corresponden"],
+  ["Patrones","Seam Allowance","Margen de costura","Separar línea de unión y borde de corte"],
+  ["Prenda en 3D","Free Sewing","Costura libre","Coser sobre un trayecto elegido"],
+  ["Prenda en 3D","N:M Sewing","Costura N:M","Unir grupos de segmentos distintos"],
+  ["Prenda en 3D","Arrangement Points","Puntos de disposición","Colocar patrones sobre el avatar"],
+  ["Prenda en 3D","Layer","Capa","Orden de superposición"],
+  ["Prenda en 3D","Pleats Fold","Doblez de pliegues","Dirección y plegado"],
+  ["Prenda en 3D","Pleats Sewing","Costura de pliegues","Uniones del plisado"],
+  ["Conceptos","Sleeve Cap","Copa de manga","Curva superior de la manga, va a la sisa"],
+  ["Conceptos","Armhole","Sisa","Abertura donde va la manga"],
+  ["Conceptos","Patch Pocket","Bolsillo aplicado","Pieza superpuesta con la boca libre"],
+  ["Detalles","Zipper","Cremallera / cierre","Apertura y cierre"],
+  ["Detalles","Button / Buttonhole","Botón / ojal","Abotonadura"],
+  ["Detalles","Trim","Fornitura / avío","Componente adicional"],
+  ["Detalles","Graphic","Gráfico","Imagen aplicada a la prenda"],
+  ["Detalles","Topstitch","Pespunte","Costura de acabado visible"]
+].map(([cat,en,es,uso])=>({cat,en,es,uso,clase:"02"})));
 /* nombres que cambian según la versión de CLO (guía 01 usa CLO 2026.1; glosario 1.1 usa el nombre anterior) */
-const ALT = {"2D Pattern Window":"Ventana de patrones 2D","Object Browser":"Explorador de objetos","Segment Sewing":"Costura por segmento"};
+const ALT = {"2D Pattern Window":"Ventana de patrones 2D","Object Browser":"Explorador de objetos","Segment Sewing":"Costura por segmento","N:M Sewing":"Costura Segmento M:N","3D Window":"Ventana de prenda 3D"};
 GLOSARIO.forEach(g=>{ if(ALT[g.en]) g.alt=ALT[g.en]; });
 
 const LAB_TESTS = ["Guardar","Copiar y pegar un patrón","Deshacer","Clic secundario","{Orbit|Orbitar}","{Pan|Desplazar vista}","{Zoom|Acercar o alejar}","{Simulate|Simular}"];
@@ -1016,7 +1348,10 @@ $$("[data-lang]").forEach(b=>b.addEventListener("click",()=>{LANG=b.dataset.lang
 $$("[data-os]").forEach(b=>b.addEventListener("click",()=>{OS=b.dataset.os;store.set("os",OS);paintOS()}));
 
 /* ============ inicio ============ */
-$("#cl-count").textContent = CLASES.filter(c=>c.href).length;
+const nPub = CLASES.filter(c=>c.href).length;
+$("#cl-count").textContent = nPub;
+$("#cl-pub").textContent = `${nPub} ${nPub===1?"publicada":"publicadas"}`;
+$$(".gl-n").forEach(el=>el.textContent=GLOSARIO.length);
 const classRowsHTML = CLASES.map(c=> c.href
   ? `<li><a href="${c.href}"><span class="n">${c.n}</span><div><div class="ttl">${esc(c.titulo)}</div><div class="meta">${esc(c.meta)}</div></div><span class="go">↘</span></a></li>`
   : `<li><div class="ghost"><span class="n">${c.n}</span><div><div class="ttl">${esc(c.titulo)}</div><div class="meta">${esc(c.meta)}</div></div><span class="go" style="opacity:.3">↘</span></div></li>`
@@ -1057,11 +1392,12 @@ $$(".hot-tbl[data-hot]").forEach(host=>{
 /* ampliar capturas */
 const lb=$("#lb");
 const lbClose=()=>{ if(lb.close) lb.close(); else lb.removeAttribute("open"); };
-$$("[data-zoom]").forEach(b=>b.addEventListener("click",()=>{
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-zoom]"); if(!b) return;
   const img=b.querySelector("img"); $("#lb-img").src=img.src; $("#lb-img").alt=img.alt;
   $("#lb-cap").textContent=b.closest("figure").querySelector("figcaption").textContent;
   try{ lb.showModal(); }catch(e){ lb.setAttribute("open",""); }
-}));
+});
 $("#lb-close").addEventListener("click",lbClose);
 lb.addEventListener("click",e=>{ if(e.target===lb) lbClose(); });
 
@@ -1205,6 +1541,32 @@ function stepMeter(){
   m.querySelector(".bar").innerHTML=stepsDone.map(d=>`<i class="${d?"on":""}"></i>`).join("");
 }
 
+/* clase 02: pasos con captura */
+function renderGuide(sel,key,list){
+  const done = store.get(key,Array(list.length).fill(false));
+  const host=$(sel), m=host.parentNode.querySelector(".meter");
+  const paint=()=>{const n=done.filter(Boolean).length;
+    m.querySelector(".txt").textContent=`${n}/${list.length} pasos`;
+    m.querySelector(".bar").innerHTML=list.map((_,i)=>`<i class="${done[i]?"on":""}"></i>`).join("")};
+  host.innerHTML = list.map((p,i)=>`
+  <article class="step${done[i]?" done":""}">
+    <div class="sn">${String(i+1).padStart(2,"0")}</div>
+    <div class="sb">
+      <h3>${esc(p.t)}</h3>
+      ${p.c.length?`<div class="cmdline">${p.c.map(c=>cmdHTML(c[0],c[1])).join("")}</div>`:""}
+      <p>${rich(p.b)}</p>
+      <figure class="shot"><button type="button" class="shot-img" data-zoom aria-label="Ampliar captura: ${esc(p.t)}"><img src="img/${p.img}" alt="${esc(p.alt)}" width="${p.w}" height="${p.h}" loading="lazy"></button><figcaption>${String(i+1).padStart(2,"0")} · ${esc(p.t)}. CLO 2026.1.336 con la interfaz en español. Captura: Matías Pezoa.</figcaption></figure>
+      <button type="button" class="done-btn" data-i="${i}" aria-pressed="${!!done[i]}">${done[i]?"✓ Hecho":"Marcar como hecho"}</button>
+    </div>
+  </article>`).join("");
+  $$(".done-btn",host).forEach(b=>b.addEventListener("click",()=>{
+    const i=+b.dataset.i; done[i]=!done[i]; store.set(key,done);
+    b.setAttribute("aria-pressed",String(done[i])); b.textContent=done[i]?"✓ Hecho":"Marcar como hecho";
+    b.closest(".step").classList.toggle("done",done[i]); paint();
+  }));
+  paint();
+}
+
 /* laboratorio de rasgos */
 let P = Object.assign({},BASE);
 const fmt = v=>`${(+v).toFixed(v%1?1:0)} cm`;
@@ -1298,12 +1660,19 @@ const clean = s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^A-Za-z0-9]
 function nameOut(){const a=clean($("#nm-ap").value)||"Apellido", n=clean($("#nm-no").value)||"Nombre"; $("#nm-out").textContent=`CLO_C01_${a}_${n}.zprj`}
 ["#nm-ap","#nm-no"].forEach(s=>{const el=$(s); el.value=store.get(s,""); el.addEventListener("input",()=>{store.set(s,el.value);nameOut()})});
 nameOut();
-$("#nm-copy").addEventListener("click",()=>{
-  const t=$("#nm-out").textContent, b=$("#nm-copy");
+function copyCode(b,code){
+  const t=code.textContent;
   const done=()=>{b.textContent="Copiado";setTimeout(()=>b.textContent="Copiar",1600)};
-  const fallback=()=>{const r=document.createRange();r.selectNodeContents($("#nm-out"));const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent="Seleccionado: copia con Ctrl/⌘ + C"};
+  const fallback=()=>{const r=document.createRange();r.selectNodeContents(code);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent="Seleccionado: copia con Ctrl/⌘ + C"};
   try{navigator.clipboard.writeText(t).then(done,fallback)}catch(e){fallback()}
-});
+}
+$("#nm-copy").addEventListener("click",()=>copyCode($("#nm-copy"),$("#nm-out")));
+/* clase 02: un apellido, dos archivos */
+function nameOut2(){const a=clean($("#nm2-ap").value)||"Apellido"; $("#nm2-e01").textContent=`C02_E01_${a}.zprj`; $("#nm2-e02").textContent=`C02_E02_${a}.zprj`}
+$("#nm2-ap").value=store.get("#nm-ap",""); /* mismo apellido que en la clase 01 */
+$("#nm2-ap").addEventListener("input",()=>{store.set("#nm-ap",$("#nm2-ap").value);nameOut2()});
+nameOut2();
+$$("[data-copy]").forEach(b=>b.addEventListener("click",()=>copyCode(b,$(b.dataset.copy))));
 
 /* ============ glosario ============ */
 const CATS=["Todas",...new Set(GLOSARIO.map(g=>g.cat))];
@@ -1364,11 +1733,11 @@ function route(){
 /* índice lateral: enlaces internos sin cambiar la ruta */
 $$(".toc a").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();document.getElementById(a.getAttribute("href").slice(1)).scrollIntoView({block:"start"})}));
 const io = "IntersectionObserver" in window ? new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){$$(".toc a").forEach(a=>a.classList.toggle("on",a.getAttribute("href")==="#"+en.target.id))}})},{rootMargin:"-30% 0px -60% 0px"}) : null;
-if(io) $$("[data-view='clase01'] .block").forEach(b=>io.observe(b));
+if(io) $$(".doc-body > .block").forEach(b=>io.observe(b));
 window.addEventListener("hashchange",route);
 
 /* ============ arranque ============ */
-drawAnatomy(); renderSteps(); initChecks(); renderGlossary(); shuffle(); showCard();
+drawAnatomy(); renderSteps(); renderGuide("#steps-e01","c02-e01-pasos",PASOS_E01); renderGuide("#steps-e02","c02-e02-pasos",PASOS_E02); initChecks(); renderGlossary(); shuffle(); showCard();
 paintCmds(); paintOS(); route();
 })();
 </script>
